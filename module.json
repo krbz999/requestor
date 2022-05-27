@@ -1,9 +1,9 @@
 {
     "name": "requestor",
     "title": "Z's Requestor",
-    "description": "...",
+    "description": "A GM can use the built-in methods to create item cards with buttons for players (or the GM) to click.",
     "system": ["dnd5e"],
-    "version": "v1.0.0",
+    "version": "v1.0.1",
     "author": "Zhell",
     "minimumCoreVersion": "9",
     "compatibleCoreVersion": "9",
