@@ -35,7 +35,9 @@ Passing an array of user ids as `whisper` in the object of the `request` will wh
 
 ### Examples
 <details><summary>Muffins!</summary>
-	```js
+
+```js
+
 Requestor.request({
 	description: "Get your muffins here!",
 	title: "Muffins!",
@@ -61,5 +63,25 @@ Requestor.request({
 		{label: "Eat Muffin", action: () => actor.items.getName("Muffin").roll()}
 	]
 });
+
 ```
-	</details>
+</details>
+
+<details><summary>Saving Throws</summary>
+
+```js
+Requestor.request({
+    buttonData: [
+        {label: "Strength Saving Throw", action: () => actor.rollAbilitySave("str")},
+        {label: "Constitution Saving Throw", action: () => actor.rollAbilitySave("con")},
+        {label: "Dexterity Saving Throw", action: () => actor.rollAbilitySave("dex")},
+        {label: "Intelligence Saving Throw", action: () => actor.rollAbilitySave("int")},
+        {label: "Wisdom Saving Throw", action: () => actor.rollAbilitySave("wis")},
+        {label: "Charisma Saving Throw", action: () => actor.rollAbilitySave("cha")}
+    ],
+    title: "Ability Checks!",
+    description: "Roll <em>something</em>."
+});
+
+```
+</details>
