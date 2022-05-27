@@ -19,12 +19,12 @@ which will display a message with a button that anyone can click and be prompted
 
 Some helper functions are pre-defined:
 * `Requestor.request`: the base function.
-* `Requestor.requestSave`: a request for a saving throw, requires three-letter key (string) and DC (integer).
-* `Requestor.requestCheck`: a request for an ability check, requires three-letter key (string).
-* `Requestor.requestSkill`: a request for an ability check using a skill, requires three-letter key (string).
-* `Requestor.requestItemRoll`: a request for an actor to use one of their items, requires the item's name (string).
-* `Requestor.requestItemGrant`: a request for an actor to claim an item or array of items, requires item data or array of item data.
-* `Requestor.requestDiceRoll`: a request for a player to roll a set of dice, requires an expression (string) and flavor (string). Supports scaling values.
+* `Requestor.abilitySave`: a request for a saving throw, requires three-letter key (string) and DC (integer).
+* `Requestor.abilityTest`: a request for an ability check, requires three-letter key (string).
+* `Requestor.rollSkill`: a request for an ability check using a skill, requires three-letter key (string).
+* `Requestor.itemRoll`: a request for an actor to use one of their items, requires the item's name (string).
+* `Requestor.itemGrant`: a request for an actor to claim an item or array of items, requires item data or array of item data.
+* `Requestor.diceRoll`: a request for a player to roll a set of dice, requires an expression (string) and flavor (string). Supports scaling values.
 * `Requestor.grantMuffin`: a request for an actor to be granted a muffin which restores 1d10 hit points when consumed.
 
 Passing an array of user ids as `whisper` in the `args` whispers the request to those clients only. If none are passed, the request appears for all.
