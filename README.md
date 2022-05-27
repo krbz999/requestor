@@ -19,15 +19,15 @@ which will display a message with a button that anyone can click and be prompted
 
 Some helper functions are pre-defined:
 * `Requestor.request`: the base function.
-* `Requestor.abilitySave`: a request for a saving throw, requires three-letter key (string) and DC (integer).
-* `Requestor.abilityTest`: a request for an ability check, requires three-letter key (string).
-* `Requestor.rollSkill`: a request for an ability check using a skill, requires three-letter key (string).
-* `Requestor.itemRoll`: a request for an actor to use one of their items, requires the item's name (string).
-* `Requestor.itemGrant`: a request for an actor to claim an item or array of items, requires item data or array of item data.
-* `Requestor.diceRoll`: a request for a player to roll a set of dice, requires an expression (string) and flavor (string). Supports scaling values.
-* `Requestor.grantMuffin`: a request for an actor to be granted a muffin which restores 1d10 hit points when consumed.
+* `Requestor.abilitySave`: a request for a saving throw, requires array of ids (strings), three-letter key (string), and DC (integer).
+* `Requestor.abilityTest`: a request for an ability check, requires array of ids (strings) and three-letter key (string).
+* `Requestor.rollSkill`: a request for an ability check using a skill, requires array of ids (strings) and three-letter key (string).
+* `Requestor.itemRoll`: a request for an actor to use one of their items, requires requires array of ids (strings) and the item's name (string).
+* `Requestor.itemGrant`: a request for an actor to claim an item or array of items, requires array of ids (strings) and item data or array of item data.
+* `Requestor.diceRoll`: a request for a player to roll a set of dice, requires array of ids (strings), an expression (string), and flavor (string). Supports scaling values.
+* `Requestor.grantMuffin`: a request for an actor to be granted a muffin which restores 1d10 hit points when consumed, requires array of ids (strings).
 
-Passing an array of user ids as `whisper` in the `args` whispers the request to those clients only. If none are passed, the request appears for all.
+Passing an array of user ids as `whisper` in the `args` of the `request` will whisper the request to those clients only. If none are passed, by passing an empty array, the request appears for all.
 
 ### Compatibility
 It is unknown how the buttons function with these modules.
