@@ -29,6 +29,6 @@ Some helper functions are pre-defined:
 Passing an array of user ids as `whisper` in the object of the `request` will whisper the request to those clients only. If none are passed (or by passing an empty array), the request appears for all.
 
 ### Compatibility
-It is unknown how the buttons function with these modules.
-* `Better Rolls for 5e`
-* `Midi-QoL`
+* `Better Rolls for 5e`: Unknown.
+* `Midi-QoL`: Appears to have no issues.
+* `Minimal Rolling Enhancements`: No issues.
