@@ -32,3 +32,34 @@ Passing an array of user ids as `whisper` in the object of the `request` will wh
 * `Better Rolls for 5e`: Unknown.
 * `Midi-QoL`: Appears to have no issues.
 * `Minimal Rolling Enhancements`: No issues.
+
+### Examples
+<details><summary>Muffins!</summary>
+	```js
+Requestor.request({
+	description: "Get your muffins here!",
+	title: "Muffins!",
+	buttonData: [
+		{label: "Get Muffin", action: () => actor.createEmbeddedDocuments("Item", [{
+			name: "Muffin",
+			type: "consumable",
+			img: "icons/containers/boxes/box-gift-green.webp",
+			data: {
+				description: {value: "<p>It's a free muffin!</p>"},
+				weight: 0.1,
+				price: 50,
+				rarity: "common",
+				activation: {type: "action", cost: 1},
+				target: {type: "self"},
+				range: {units: "self"},
+				uses: {value: 1, max: "1", per: "charges", autoDestroy: true},
+				actionType: "heal",
+				damage: {parts: [["1d10","healing"]]},
+				consumableType: "food"
+			}
+		}])},
+		{label: "Eat Muffin", action: () => actor.items.getName("Muffin").roll()}
+	]
+});
+```
+	</details>
