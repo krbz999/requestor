@@ -1,0 +1,19 @@
+{
+    "name": "requestor",
+    "title": "Z's Requestor",
+    "description": "...",
+    "system": ["dnd5e"],
+    "version": "v1.0.0",
+    "author": "Zhell",
+    "minimumCoreVersion": "9",
+    "compatibleCoreVersion": "9",
+    "esmodules": [
+		"./setup.js",
+		"./scripts/requestor.mjs",
+		"./scripts/api.mjs"
+	],
+	"scripts": [],
+    "url": "https://github.com/krbz999/requestor",
+    "manifest": "https://github.com/krbz999/requestor/releases/latest/download/module.json",
+    "download": "https://github.com/krbz999/requestor/releases/latest/download/module.zip"
+}
