@@ -6,12 +6,20 @@ export class Requestor {
 	// create chat card.
 	static _createCard = (args = {}) => {
 		if(!game.user.isGM) return console.log("Only the GM is allowed to request.");
-		const REQUESTOR_card_action = "" + args.action;
-		if(!REQUESTOR_card_action) return ui.notifications.error("You must pass a valid action.");
+		
+		// create button data.
+		const REQUESTOR_card_button_data = args.buttonData; // array of objects.
+		let buttonHTML = "";
+		for(let i = 0; i < REQUESTOR_card_button_data.length; i++){
+			const REQUESTOR_card_action = "" + REQUESTOR_card_button_data[i].action;
+			if(!REQUESTOR_card_action) return ui.notifications.error("You must pass a valid action.");
+			const REQUESTOR_card_label = REQUESTOR_card_button_data[i].label ?? "Click me!";
+			buttonHTML += `<button id="${CONST.MODULE_NAME}" data-index="${i}">${REQUESTOR_card_label}</button>`;
+		}
+		
 		const REQUESTOR_card_img = args.img ?? CONST.MODULE_ICON;
 		const REQUESTOR_card_title = args.title ?? "Requestor";
 		const REQUESTOR_card_description = args.description ?? "";
-		const REQUESTOR_card_label = args.label ?? "Click me!";
 		const REQUESTOR_card_whisper = args.whisper?.length > 0 ? args.whisper : [];
 		
 		const messageData = {
@@ -28,11 +36,13 @@ export class Requestor {
 					${REQUESTOR_card_description}
 				</div>
 				<div class="card-buttons">
-					<button id="${CONST.MODULE_NAME}">${REQUESTOR_card_label}</button>
+					${buttonHTML}
 				</div>`
 		}
 		messageData[`flags.${CONST.MODULE_NAME}.args`] = args;
-		messageData[`flags.${CONST.MODULE_NAME}.args.action`] = REQUESTOR_card_action;
+		for(let i = 0; i < REQUESTOR_card_button_data.length; i++){
+			messageData[`flags.${CONST.MODULE_NAME}.args`].buttonData[i].action = "" + REQUESTOR_card_button_data[i].action;
+		}
 		
 		ChatMessage.create(messageData);
 	}
@@ -42,19 +52,22 @@ export class Requestor {
 			
 			// make sure it's a Requestor button.
 			const button = event.target;
-			if(button?.id !== CONST.MODULE_NAME) return;
+			if(!button?.id?.includes(CONST.MODULE_NAME)) return;
+			
+			// get the button index (starting at 0).
+			const buttonIndex = Number(button.getAttribute("data-index"));
 			
 			// get the chat card.
 			const card = button.closest(".chat-card");
 			const messageId = card.closest(".message").dataset.messageId;
 			const message = game.messages.get(messageId);
-			const args = message.getFlag(CONST.MODULE_NAME, "args");
+			const args = message.getFlag(CONST.MODULE_NAME, "args.buttonData")[buttonIndex];
 			
 			// bail out if the message creator is not a GM.
 			if(!message.user.isGM) return;
 			
 			// turn the card's embedded flag into a function.
-			const body = `(async ${message.getFlag(CONST.MODULE_NAME, "args.action")})();`;
+			const body = `(async ${args.action})();`;
 			const fn = Function("token", "character", "actor", "args", body);
 			
 			// define helper variables.
@@ -72,51 +85,65 @@ export class Requestor {
 		});
 	}
 	
-	static _createCard_SAVE = (whisper, ability, dc) => {
-		const action = () => {actor.rollAbilitySave(args.ability)};
-		Requestor._createCard({whisper, action, ability, dc,
-			label: `Saving Throw DC ${dc ?? 10} ${CONFIG.DND5E.abilities[ability]}`
-		});
+	static _createCard_SAVE = ({whisper = [], ability = "int", dc = 10}) => {
+		const buttonData = [{
+			action: () => {actor.rollAbilitySave(args.ability)},
+			label: `Saving Throw DC ${dc} ${CONFIG.DND5E.abilities[ability]}`,
+			ability
+		}];
+		Requestor._createCard({whisper, buttonData});
 	}
 	
-	static _createCard_CHECK = (whisper, ability) => {
-		const action = () => {actor.rollAbilityTest(args.ability)};
-		Requestor._createCard({whisper, action, ability,
-			label: `${CONFIG.DND5E.abilities[ability]} Ability Check`
-		});
+	static _createCard_CHECK = ({whisper = [], ability = "int"}) => {
+		const buttonData = [{
+			action: () => {actor.rollAbilityTest(args.ability)},
+			label: `${CONFIG.DND5E.abilities[ability]} Ability Check`,
+			ability
+		}];
+		Requestor._createCard({whisper, buttonData});
 	}
 	
-	static _createCard_SKILL = (whisper, skill) => {
-		const action = () => {actor.rollSkill(args.skill)};
-		Requestor._createCard({whisper, action, skill,
-			label: `${CONFIG.DND5E.skills[skill]} Skill Check`
-		});
+	static _createCard_SKILL = ({whisper = [], skill = "nat"}) => {
+		const buttonData = [{
+			action: () => {actor.rollSkill(args.skill)},
+			label: `${CONFIG.DND5E.skills[skill]} Skill Check`,
+			skill
+		}];
+		Requestor._createCard({whisper, buttonData});
 	}
 	
-	static _createCard_ROLL = (whisper, itemName) => {
-		const action = () => {actor.items.getName(args.itemName)?.roll()};
-		Requestor._createCard({whisper, action, itemName,
-			label: `Use ${itemName}`
-		});
+	static _createCard_ROLL = ({whisper = [], itemName = ""}) => {
+		if(!itemName) return;
+		const buttonData = [{
+			action: () => {actor.items.getName(args.itemName)?.roll()},
+			label: `Use ${itemName}`,
+			itemName
+		}];
+		Requestor._createCard({whisper, buttonData});
 	}
 	
-	static _createCard_GRANT = (whisper, itemData) => {
+	static _createCard_GRANT = ({whisper = [], itemData = []}) => {
 		const itemDataArray = itemData instanceof Array ? itemData : [itemData];
-		const labelFix = itemData instanceof Array ? "Items" : itemData.name;
-		const action = () => {actor.createEmbeddedDocuments("Item", args.itemDataArray)};
-		Requestor._createCard({whisper, action, itemDataArray,
+		const labelFix = itemDataArray?.length > 1 ? "Items" : itemDataArray[0].name;
+		const buttonData = [{
+			action: () => {actor.createEmbeddedDocuments("Item", args.itemDataArray)},
+			itemDataArray,
 			label: `Claim ${labelFix}`
-		});
+		}];
+		Requestor._createCard({whisper, buttonData});
 	}
 	
-	static _createCard_DICE = (whisper, expression, flavor) => {
-		const action = () => {new Roll(args.expression, actor?.getRollData()).toMessage({speaker: ChatMessage.getSpeaker({actor}), flavor: args.flavor})};
-		Requestor._createCard({whisper, action, expression, flavor,
-			label: `Roll Dice`
-		});
+	static _createCard_DICE = ({whisper = [], expression = "0", flavor = ""}) => {
+		const buttonData = [{
+			action: () => {new Roll(args.expression, actor?.getRollData()).toMessage({speaker: ChatMessage.getSpeaker({actor}), flavor: args.flavor})},
+			label: `Roll Dice`,
+			expression,
+			flavor
+		}];
+		Requestor._createCard({whisper, buttonData});
 	}
 	
-	static _createCard_MUFFIN = (whisper) => {
+	static _createCard_MUFFIN = () => {
 		const itemData = {
 			name: "Free Muffin",
 			type: "consumable",
@@ -134,7 +161,7 @@ export class Requestor {
 				consumableType: "food"
 			}
 		}
-		Requestor._createCard_GRANT(whisper, itemData);
+		Requestor._createCard_GRANT({whisper: [], itemData});
 	}
 }
 
