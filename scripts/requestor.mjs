@@ -67,7 +67,7 @@ export class Requestor {
 			if(!message.user.isGM) return;
 			
 			// turn the card's embedded flag into a function.
-			const body = `(async ${args.action})();`;
+			const body = `(${args.action})();`;
 			const fn = Function("token", "character", "actor", "args", body);
 			
 			// define helper variables.
@@ -85,7 +85,7 @@ export class Requestor {
 		});
 	}
 	
-	static _createCard_SAVE = ({whisper = [], ability = "int", dc = 10}) => {
+	static _createCard_SAVE = ({whisper = [], ability = "int", dc = 10} = {}) => {
 		const buttonData = [{
 			action: () => {actor.rollAbilitySave(args.ability)},
 			label: `Saving Throw DC ${dc} ${CONFIG.DND5E.abilities[ability]}`,
@@ -94,7 +94,7 @@ export class Requestor {
 		Requestor._createCard({whisper, buttonData});
 	}
 	
-	static _createCard_CHECK = ({whisper = [], ability = "int"}) => {
+	static _createCard_CHECK = ({whisper = [], ability = "int"} = {}) => {
 		const buttonData = [{
 			action: () => {actor.rollAbilityTest(args.ability)},
 			label: `${CONFIG.DND5E.abilities[ability]} Ability Check`,
@@ -103,7 +103,7 @@ export class Requestor {
 		Requestor._createCard({whisper, buttonData});
 	}
 	
-	static _createCard_SKILL = ({whisper = [], skill = "nat"}) => {
+	static _createCard_SKILL = ({whisper = [], skill = "nat"} = {}) => {
 		const buttonData = [{
 			action: () => {actor.rollSkill(args.skill)},
 			label: `${CONFIG.DND5E.skills[skill]} Skill Check`,
@@ -112,7 +112,7 @@ export class Requestor {
 		Requestor._createCard({whisper, buttonData});
 	}
 	
-	static _createCard_ROLL = ({whisper = [], itemName = ""}) => {
+	static _createCard_ROLL = ({whisper = [], itemName = ""} = {}) => {
 		if(!itemName) return;
 		const buttonData = [{
 			action: () => {actor.items.getName(args.itemName)?.roll()},
@@ -122,7 +122,7 @@ export class Requestor {
 		Requestor._createCard({whisper, buttonData});
 	}
 	
-	static _createCard_GRANT = ({whisper = [], itemData = []}) => {
+	static _createCard_GRANT = ({whisper = [], itemData = []} = {}) => {
 		const itemDataArray = itemData instanceof Array ? itemData : [itemData];
 		const labelFix = itemDataArray?.length > 1 ? "Items" : itemDataArray[0].name;
 		const buttonData = [{
@@ -133,12 +133,37 @@ export class Requestor {
 		Requestor._createCard({whisper, buttonData});
 	}
 	
-	static _createCard_DICE = ({whisper = [], expression = "0", flavor = ""}) => {
+	static _createCard_DICE = ({whisper = [], expression = "0", flavor = ""} = {}) => {
 		const buttonData = [{
 			action: () => {new Roll(args.expression, actor?.getRollData()).toMessage({speaker: ChatMessage.getSpeaker({actor}), flavor: args.flavor})},
 			label: `Roll Dice`,
 			expression,
 			flavor
+		}];
+		Requestor._createCard({whisper, buttonData});
+	}
+	
+	static _createCard_TEMPLATE = ({whisper = [], templateData} = {}) => {
+		const template_data = templateData ?? {
+			t: "circle",
+			x: canvas.app.renderer.plugins.interaction.mouse.getLocalPosition(canvas.app.stage).x,
+			y: canvas.app.renderer.plugins.interaction.mouse.getLocalPosition(canvas.app.stage).y,
+			distance: 20,
+			direction: 0,
+			angle: 0,
+			width: 1
+		}
+		const buttonData = [{
+			label: "Place Template",
+			action: () => {
+				const template_data = args.template_data;
+				template_data.user = game.user.id;
+				
+				const doc = new CONFIG.MeasuredTemplate.documentClass(template_data, {parent: canvas.scene});
+				const template = new game.dnd5e.canvas.AbilityTemplate(doc);
+				template.drawPreview();
+			},
+			template_data
 		}];
 		Requestor._createCard({whisper, buttonData});
 	}
@@ -155,6 +180,7 @@ export class Requestor {
 				rarity: "common",
 				activation: {type: "action", cost: 1},
 				range: {units: "self"},
+				target: {type: "self"},
 				uses: {value: 1, max: "1", per: "charges", autoDestroy: true},
 				actionType: "heal",
 				damage: {parts: [["1d10", "healing"]]},

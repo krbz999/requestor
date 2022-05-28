@@ -15,6 +15,7 @@ export class api {
 			itemRoll: Requestor._createCard_ROLL,
 			itemGrant: Requestor._createCard_GRANT,
 			diceRoll: Requestor._createCard_DICE,
+			measureTemplate: Requestor._createCard_TEMPLATE,
 			grantMuffin: Requestor._createCard_MUFFIN
 		}
 	}
