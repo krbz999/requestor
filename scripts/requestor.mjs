@@ -40,6 +40,7 @@ export class Requestor {
 				</div>`
 		}
 		messageData[`flags.${CONST.MODULE_NAME}.args`] = args;
+		messageData[`flags.${CONST.MODULE_NAME}.limit`] = args.limit ?? CONST.LIMIT.FREE;
 		for(let i = 0; i < REQUESTOR_card_button_data.length; i++){
 			messageData[`flags.${CONST.MODULE_NAME}.args`].buttonData[i].action = "" + REQUESTOR_card_button_data[i].action;
 		}
@@ -68,7 +69,7 @@ export class Requestor {
 			
 			// turn the card's embedded flag into a function.
 			const body = `(${args.action})();`;
-			const fn = Function("token", "character", "actor", "args", body);
+			const fn = Function("token", "character", "actor", "event", "args", body);
 			
 			// define helper variables.
 			let character = game.user.character;
@@ -76,53 +77,68 @@ export class Requestor {
 			let token = canvas.tokens.controlled[0] ?? actor?.token;
 			
 			// execute.
-			try {
-				fn.call({}, token, character, actor, args);
-			}catch(err){
-				ui.notifications.error("Error in function execution.");
-			}
-			button.removeAttribute("disabled");
+			await fn.call({}, token, character, actor, event, args);
+			await game.user.setFlag(CONST.MODULE_NAME, "buttonClick", messageId);
+			const limit = message.getFlag(CONST.MODULE_NAME, "limit");
+			if(limit === CONST.LIMIT.FREE) button.removeAttribute("disabled");
 		});
 	}
 	
-	static _createCard_SAVE = ({whisper = [], ability = "int", dc = 10} = {}) => {
+
+	static _createCard_SAVE = ({whisper = [], ability = "int", dc = 10, limit = CONST.LIMIT.FREE} = {}) => {
 		const buttonData = [{
-			action: () => {actor.rollAbilitySave(args.ability)},
+			action: () => {actor.rollAbilitySave(args.ability, {event})},
 			label: `Saving Throw DC ${dc} ${CONFIG.DND5E.abilities[ability]}`,
 			ability
 		}];
-		Requestor._createCard({whisper, buttonData});
+		Requestor._createCard({
+			whisper: whisper?.length ? whisper : [],
+			buttonData,
+			limit
+		});
 	}
 	
-	static _createCard_CHECK = ({whisper = [], ability = "int"} = {}) => {
+	static _createCard_CHECK = ({whisper = [], ability = "int", limit = CONST.LIMIT.FREE} = {}) => {
 		const buttonData = [{
-			action: () => {actor.rollAbilityTest(args.ability)},
+			action: () => {actor.rollAbilityTest(args.ability, {event})},
 			label: `${CONFIG.DND5E.abilities[ability]} Ability Check`,
 			ability
 		}];
-		Requestor._createCard({whisper, buttonData});
+		Requestor._createCard({
+			whisper: whisper?.length ? whisper : [],
+			buttonData,
+			limit
+		});
 	}
 	
-	static _createCard_SKILL = ({whisper = [], skill = "nat"} = {}) => {
+	static _createCard_SKILL = ({whisper = [], skill = "nat", limit = CONST.LIMIT.FREE} = {}) => {
 		const buttonData = [{
-			action: () => {actor.rollSkill(args.skill)},
+			action: () => {actor.rollSkill(args.skill, {event})},
 			label: `${CONFIG.DND5E.skills[skill]} Skill Check`,
 			skill
 		}];
-		Requestor._createCard({whisper, buttonData});
+		Requestor._createCard({
+			whisper: whisper?.length ? whisper : [],
+			buttonData,
+			limit
+		});
 	}
 	
-	static _createCard_ROLL = ({whisper = [], itemName = ""} = {}) => {
+	static _createCard_ROLL = ({whisper = [], itemName = "", limit = CONST.LIMIT.FREE} = {}) => {
 		if(!itemName) return;
 		const buttonData = [{
 			action: () => {actor.items.getName(args.itemName)?.roll()},
 			label: `Use ${itemName}`,
 			itemName
 		}];
-		Requestor._createCard({whisper, buttonData});
+		Requestor._createCard({
+			whisper: whisper?.length ? whisper : [],
+			buttonData,
+			limit
+		});
 	}
 	
-	static _createCard_GRANT = ({whisper = [], itemData = []} = {}) => {
+	static _createCard_GRANT = ({whisper = [], itemData = [], limit = CONST.LIMIT.FREE} = {}) => {
 		const itemDataArray = itemData instanceof Array ? itemData : [itemData];
 		const labelFix = itemDataArray?.length > 1 ? "Items" : itemDataArray[0].name;
 		const buttonData = [{
@@ -130,20 +146,28 @@ export class Requestor {
 			itemDataArray,
 			label: `Claim ${labelFix}`
 		}];
-		Requestor._createCard({whisper, buttonData});
+		Requestor._createCard({
+			whisper: whisper?.length ? whisper : [],
+			buttonData,
+			limit
+		});
 	}
 	
-	static _createCard_DICE = ({whisper = [], expression = "0", flavor = ""} = {}) => {
+	static _createCard_DICE = ({whisper = [], expression = "0", flavor = "", limit = CONST.LIMIT.FREE} = {}) => {
 		const buttonData = [{
 			action: () => {new Roll(args.expression, actor?.getRollData()).toMessage({speaker: ChatMessage.getSpeaker({actor}), flavor: args.flavor})},
 			label: `Roll Dice`,
 			expression,
 			flavor
 		}];
-		Requestor._createCard({whisper, buttonData});
+		Requestor._createCard({
+			whisper: whisper?.length ? whisper : [],
+			buttonData,
+			limit
+		});
 	}
 	
-	static _createCard_TEMPLATE = ({whisper = [], templateData} = {}) => {
+	static _createCard_TEMPLATE = ({whisper = [], templateData, limit = CONST.LIMIT.FREE} = {}) => {
 		const template_data = templateData ?? {
 			t: "circle",
 			x: canvas.app.renderer.plugins.interaction.mouse.getLocalPosition(canvas.app.stage).x,
@@ -165,7 +189,11 @@ export class Requestor {
 			},
 			template_data
 		}];
-		Requestor._createCard({whisper, buttonData});
+		Requestor._createCard({
+			whisper: whisper?.length ? whisper : [],
+			buttonData,
+			limit
+		});
 	}
 	
 	static _createCard_MUFFIN = () => {
@@ -187,7 +215,7 @@ export class Requestor {
 				consumableType: "food"
 			}
 		}
-		Requestor._createCard_GRANT({whisper: [], itemData});
+		Requestor._createCard_GRANT({itemData, limit: CONST.LIMIT.ONCE});
 	}
 }
 

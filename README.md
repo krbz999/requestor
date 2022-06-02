@@ -9,7 +9,7 @@ Requestor.request({
 	description: "This is a request.",
 	img: "icons/containers/boxes/box-gift-green.webp",
 	buttonData: [{
-		action: () => { actor.rollSkill("nat") },
+		action: async () => { await actor.rollSkill("nat", {event}) },
 		label: "Nature Skill Check"
 	}]
 });
