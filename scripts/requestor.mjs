@@ -18,7 +18,7 @@ export class Requestor {
 		}
 		
 		const REQUESTOR_card_img = args.img ?? CONST.MODULE_ICON;
-		const REQUESTOR_card_title = args.title ?? "Requestor";
+		const REQUESTOR_card_title = args.title ?? CONST.MODULE_SPEAKER;
 		const REQUESTOR_card_description = args.description ?? "";
 		const REQUESTOR_card_whisper = args.whisper?.length > 0 ? args.whisper : [];
 		
@@ -43,6 +43,11 @@ export class Requestor {
 		messageData[`flags.${CONST.MODULE_NAME}.limit`] = args.limit ?? CONST.LIMIT.FREE;
 		for(let i = 0; i < REQUESTOR_card_button_data.length; i++){
 			messageData[`flags.${CONST.MODULE_NAME}.args`].buttonData[i].action = "" + REQUESTOR_card_button_data[i].action;
+			
+			// if button has been given no limit, use card's limit.
+			if(!messageData[`flags.${CONST.MODULE_NAME}.args`].buttonData[i].limit){
+				messageData[`flags.${CONST.MODULE_NAME}.args`].buttonData[i].limit = messageData[`flags.${CONST.MODULE_NAME}.limit`];
+			}
 		}
 		
 		ChatMessage.create(messageData);
@@ -52,8 +57,8 @@ export class Requestor {
 		html[0].addEventListener("click", async (event) => {
 			
 			// make sure it's a Requestor button.
-			const button = event.target;
-			if(!button?.id?.includes(CONST.MODULE_NAME)) return;
+			const button = event.target?.closest(`button[id="${CONST.MODULE_NAME}"]`);
+			if(!button) return;
 			
 			// get the button index (starting at 0).
 			const buttonIndex = Number(button.getAttribute("data-index"));
@@ -62,7 +67,16 @@ export class Requestor {
 			const card = button.closest(".chat-card");
 			const messageId = card.closest(".message").dataset.messageId;
 			const message = game.messages.get(messageId);
+			
+			// get whether the user has clicked this button already.
+			const buttonFlag = game.user.getFlag(CONST.MODULE_NAME, `${CONST.MESSAGE_IDS}.${messageId}.${buttonIndex}`);
+			const clicked = !!buttonFlag?.clicked;
+			
+			// get the args.
 			const args = message.getFlag(CONST.MODULE_NAME, "args.buttonData")[buttonIndex];
+			
+			// if it is only allowed to be clicked once, bail out.
+			if(args.limit === CONST.LIMIT.ONCE && clicked) return;
 			
 			// bail out if the message creator is not a GM.
 			if(!message.user.isGM) return;
@@ -78,10 +92,37 @@ export class Requestor {
 			
 			// execute.
 			await fn.call({}, token, character, actor, event, args);
-			await game.user.setFlag(CONST.MODULE_NAME, "buttonClick", messageId);
-			const limit = message.getFlag(CONST.MODULE_NAME, "limit");
-			if(limit === CONST.LIMIT.FREE) button.removeAttribute("disabled");
+			
+			// if button is unlimited, remove disabled attribute.
+			if(args.limit === CONST.LIMIT.FREE) button.removeAttribute("disabled");
+			else await game.user.setFlag(CONST.MODULE_NAME, `${CONST.MESSAGE_IDS}.${messageId}.${buttonIndex}.${CONST.CLICKED}`, true);
 		});
+	}
+	
+	// remove user flags if the message is gone.
+	// set disabled attribute if message exists and is limited.
+	static _setDisabledState = async (_chatLog, html) => {
+		// get user flags
+		const messageIds = Object.keys(game.user.getFlag(CONST.MODULE_NAME, CONST.MESSAGE_IDS));
+		const updates = {};
+		
+		// for each message id, find chatLog.collection.get(id)
+		for(let id of messageIds){
+			let message = html[0].querySelector(`[data-message-id=${id}]`);
+			if(!message) updates[`flags.${CONST.MODULE_NAME}.${CONST.MESSAGE_IDS}.-=${id}`] = null;
+			else{
+				let buttons = message.querySelectorAll(`button#${CONST.MODULE_NAME}`);
+				for(let button of buttons){
+					let buttonIndex = button.getAttribute("data-index");
+					if(game.user.getFlag(CONST.MODULE_NAME, `${CONST.MESSAGE_IDS}.${id}.${buttonIndex}.${CONST.CLICKED}`)){
+						button.setAttribute("disabled", "");
+					}
+				}
+			}
+		}
+		
+		// if message not found, unset game.user.data.flags.requestor.messageIds.id
+		game.user.update(updates);
 	}
 	
 
@@ -221,3 +262,6 @@ export class Requestor {
 
 Hooks.on("renderChatLog", Requestor._onClickButton);
 Hooks.on("renderChatPopout", Requestor._onClickButton);
+
+Hooks.on("renderChatLog", Requestor._setDisabledState);
+Hooks.on("renderChatPopout", Requestor._setDisabledState);

@@ -7,5 +7,7 @@ export const CONST = {
 	LIMIT: {
 		FREE: 0,
 		ONCE: 1
-	}
+	},
+	MESSAGE_IDS: "messageIds",
+	CLICKED: "clicked"
 }
