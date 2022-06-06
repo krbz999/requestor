@@ -103,12 +103,14 @@ export class Requestor {
 	// set disabled attribute if message exists and is limited.
 	static _setDisabledState = async (_chatLog, html) => {
 		// get user flags
-		const messageIds = Object.keys(game.user.getFlag(CONST.MODULE_NAME, CONST.MESSAGE_IDS));
+		const flags = game.user.getFlag(CONST.MODULE_NAME, CONST.MESSAGE_IDS);
+		if(!flags) return;
+		const messageIds = Object.keys(flags);
 		const updates = {};
 		
 		// for each message id, find chatLog.collection.get(id)
 		for(let id of messageIds){
-			let message = html[0].querySelector(`[data-message-id=${id}]`);
+			let message = html[0].querySelector(`[data-message-id="${id}"]`);
 			if(!message) updates[`flags.${CONST.MODULE_NAME}.${CONST.MESSAGE_IDS}.-=${id}`] = null;
 			else{
 				let buttons = message.querySelectorAll(`button#${CONST.MODULE_NAME}`);
