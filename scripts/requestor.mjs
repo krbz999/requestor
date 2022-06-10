@@ -1,11 +1,11 @@
-import { CONST } from "./const.mjs";
-import { SETTING_NAMES } from "./settings.mjs";
+import { CONSTS } from "./const.mjs";
 
 export class Requestor {
 	
 	// create chat card.
-	static _createCard = (args = {}) => {
-		if(!game.user.isGM) return console.log("Only the GM is allowed to request.");
+	static _createCard = async (args = {}) => {
+		const allowPlayers = game.settings.get(CONSTS.MODULE_NAME, CONSTS.SETTING_NAMES.TRUST_MODE);
+		if(!game.user.isGM && !allowPlayers) return console.log("Only the GM is allowed to request.");
 		
 		// create button data.
 		const REQUESTOR_card_button_data = args.buttonData; // array of objects.
@@ -14,11 +14,11 @@ export class Requestor {
 			const REQUESTOR_card_action = "" + REQUESTOR_card_button_data[i].action;
 			if(!REQUESTOR_card_action) return ui.notifications.error("You must pass a valid action.");
 			const REQUESTOR_card_label = REQUESTOR_card_button_data[i].label ?? "Click me!";
-			buttonHTML += `<button id="${CONST.MODULE_NAME}" data-index="${i}">${REQUESTOR_card_label}</button>`;
+			buttonHTML += `<button id="${CONSTS.MODULE_NAME}" data-index="${i}">${REQUESTOR_card_label}</button>`;
 		}
 		
-		const REQUESTOR_card_img = args.img ?? CONST.MODULE_ICON;
-		const REQUESTOR_card_title = args.title ?? CONST.MODULE_SPEAKER;
+		const REQUESTOR_card_img = args.img ?? CONSTS.MODULE_ICON;
+		const REQUESTOR_card_title = args.title ?? CONSTS.MODULE_SPEAKER;
 		const REQUESTOR_card_description = args.description ?? "";
 		const REQUESTOR_card_whisper = args.whisper?.length > 0 ? args.whisper : [];
 		
@@ -39,25 +39,25 @@ export class Requestor {
 					${buttonHTML}
 				</div>`
 		}
-		messageData[`flags.${CONST.MODULE_NAME}.args`] = args;
-		messageData[`flags.${CONST.MODULE_NAME}.limit`] = args.limit ?? CONST.LIMIT.FREE;
+		messageData[`flags.${CONSTS.MODULE_NAME}.args`] = args;
+		messageData[`flags.${CONSTS.MODULE_NAME}.limit`] = args.limit ?? CONSTS.LIMIT.FREE;
 		for(let i = 0; i < REQUESTOR_card_button_data.length; i++){
-			messageData[`flags.${CONST.MODULE_NAME}.args`].buttonData[i].action = "" + REQUESTOR_card_button_data[i].action;
+			messageData[`flags.${CONSTS.MODULE_NAME}.args`].buttonData[i].action = "" + REQUESTOR_card_button_data[i].action;
 			
 			// if button has been given no limit, use card's limit.
-			if(!messageData[`flags.${CONST.MODULE_NAME}.args`].buttonData[i].limit){
-				messageData[`flags.${CONST.MODULE_NAME}.args`].buttonData[i].limit = messageData[`flags.${CONST.MODULE_NAME}.limit`];
+			if(!messageData[`flags.${CONSTS.MODULE_NAME}.args`].buttonData[i].limit){
+				messageData[`flags.${CONSTS.MODULE_NAME}.args`].buttonData[i].limit = messageData[`flags.${CONSTS.MODULE_NAME}.limit`];
 			}
 		}
 		
-		ChatMessage.create(messageData);
+		return ChatMessage.create(messageData);
 	}
 	
 	static _onClickButton = (_chatLog, html) => {
 		html[0].addEventListener("click", async (event) => {
 			
 			// make sure it's a Requestor button.
-			const button = event.target?.closest(`button[id="${CONST.MODULE_NAME}"]`);
+			const button = event.target?.closest(`button[id="${CONSTS.MODULE_NAME}"]`);
 			if(!button) return;
 			
 			// get the button index (starting at 0).
@@ -69,17 +69,18 @@ export class Requestor {
 			const message = game.messages.get(messageId);
 			
 			// get whether the user has clicked this button already.
-			const buttonFlag = game.user.getFlag(CONST.MODULE_NAME, `${CONST.MESSAGE_IDS}.${messageId}.${buttonIndex}`);
+			const buttonFlag = game.user.getFlag(CONSTS.MODULE_NAME, `${CONSTS.MESSAGE_IDS}.${messageId}.${buttonIndex}`);
 			const clicked = !!buttonFlag?.clicked;
 			
 			// get the args.
-			const args = message.getFlag(CONST.MODULE_NAME, "args.buttonData")[buttonIndex];
+			const args = message.getFlag(CONSTS.MODULE_NAME, "args.buttonData")[buttonIndex];
 			
 			// if it is only allowed to be clicked once, bail out.
-			if(args.limit === CONST.LIMIT.ONCE && clicked) return;
+			if(args.limit === CONSTS.LIMIT.ONCE && clicked) return;
 			
 			// bail out if the message creator is not a GM.
-			if(!message.user.isGM) return;
+			const allowPlayers = game.settings.get(CONSTS.MODULE_NAME, CONSTS.SETTING_NAMES.TRUST_MODE);
+			if(!message.user.isGM && !allowPlayers) return console.log("Only the GM is allowed to request.");
 			
 			// turn the card's embedded flag into a function.
 			const body = `(${args.action})();`;
@@ -94,8 +95,8 @@ export class Requestor {
 			await fn.call({}, token, character, actor, event, args);
 			
 			// if button is unlimited, remove disabled attribute.
-			if(args.limit === CONST.LIMIT.FREE) button.removeAttribute("disabled");
-			else await game.user.setFlag(CONST.MODULE_NAME, `${CONST.MESSAGE_IDS}.${messageId}.${buttonIndex}.${CONST.CLICKED}`, true);
+			if(args.limit === CONSTS.LIMIT.FREE) button.removeAttribute("disabled");
+			else await game.user.setFlag(CONSTS.MODULE_NAME, `${CONSTS.MESSAGE_IDS}.${messageId}.${buttonIndex}.${CONSTS.CLICKED}`, true);
 		});
 	}
 	
@@ -103,7 +104,7 @@ export class Requestor {
 	// set disabled attribute if message exists and is limited.
 	static _setDisabledState = async (_chatLog, html) => {
 		// get user flags
-		const flags = game.user.getFlag(CONST.MODULE_NAME, CONST.MESSAGE_IDS);
+		const flags = game.user.getFlag(CONSTS.MODULE_NAME, CONSTS.MESSAGE_IDS);
 		if(!flags) return;
 		const messageIds = Object.keys(flags);
 		const updates = {};
@@ -111,12 +112,12 @@ export class Requestor {
 		// for each message id, find chatLog.collection.get(id)
 		for(let id of messageIds){
 			let message = html[0].querySelector(`[data-message-id="${id}"]`);
-			if(!message) updates[`flags.${CONST.MODULE_NAME}.${CONST.MESSAGE_IDS}.-=${id}`] = null;
+			if(!message) updates[`flags.${CONSTS.MODULE_NAME}.${CONSTS.MESSAGE_IDS}.-=${id}`] = null;
 			else{
-				let buttons = message.querySelectorAll(`button#${CONST.MODULE_NAME}`);
+				let buttons = message.querySelectorAll(`button#${CONSTS.MODULE_NAME}`);
 				for(let button of buttons){
 					let buttonIndex = button.getAttribute("data-index");
-					if(game.user.getFlag(CONST.MODULE_NAME, `${CONST.MESSAGE_IDS}.${id}.${buttonIndex}.${CONST.CLICKED}`)){
+					if(game.user.getFlag(CONSTS.MODULE_NAME, `${CONSTS.MESSAGE_IDS}.${id}.${buttonIndex}.${CONSTS.CLICKED}`)){
 						button.setAttribute("disabled", "");
 					}
 				}
@@ -128,60 +129,60 @@ export class Requestor {
 	}
 	
 
-	static _createCard_SAVE = ({whisper = [], ability = "int", dc = 10, limit = CONST.LIMIT.FREE} = {}) => {
+	static _createCard_SAVE = async ({whisper = [], ability = "int", dc = 10, limit = CONSTS.LIMIT.FREE} = {}) => {
 		const buttonData = [{
 			action: () => {actor.rollAbilitySave(args.ability, {event})},
 			label: `Saving Throw DC ${dc} ${CONFIG.DND5E.abilities[ability]}`,
 			ability
 		}];
-		Requestor._createCard({
+		return Requestor._createCard({
 			whisper: whisper?.length ? whisper : [],
 			buttonData,
 			limit
 		});
 	}
 	
-	static _createCard_CHECK = ({whisper = [], ability = "int", limit = CONST.LIMIT.FREE} = {}) => {
+	static _createCard_CHECK = async ({whisper = [], ability = "int", limit = CONSTS.LIMIT.FREE} = {}) => {
 		const buttonData = [{
 			action: () => {actor.rollAbilityTest(args.ability, {event})},
 			label: `${CONFIG.DND5E.abilities[ability]} Ability Check`,
 			ability
 		}];
-		Requestor._createCard({
+		return Requestor._createCard({
 			whisper: whisper?.length ? whisper : [],
 			buttonData,
 			limit
 		});
 	}
 	
-	static _createCard_SKILL = ({whisper = [], skill = "nat", limit = CONST.LIMIT.FREE} = {}) => {
+	static _createCard_SKILL = async ({whisper = [], skill = "nat", limit = CONSTS.LIMIT.FREE} = {}) => {
 		const buttonData = [{
 			action: () => {actor.rollSkill(args.skill, {event})},
 			label: `${CONFIG.DND5E.skills[skill]} Skill Check`,
 			skill
 		}];
-		Requestor._createCard({
+		return Requestor._createCard({
 			whisper: whisper?.length ? whisper : [],
 			buttonData,
 			limit
 		});
 	}
 	
-	static _createCard_ROLL = ({whisper = [], itemName = "", limit = CONST.LIMIT.FREE} = {}) => {
+	static _createCard_ROLL = async ({whisper = [], itemName = "", limit = CONSTS.LIMIT.FREE} = {}) => {
 		if(!itemName) return;
 		const buttonData = [{
 			action: () => {actor.items.getName(args.itemName)?.roll()},
 			label: `Use ${itemName}`,
 			itemName
 		}];
-		Requestor._createCard({
+		return Requestor._createCard({
 			whisper: whisper?.length ? whisper : [],
 			buttonData,
 			limit
 		});
 	}
 	
-	static _createCard_GRANT = ({whisper = [], itemData = [], limit = CONST.LIMIT.FREE} = {}) => {
+	static _createCard_GRANT = async ({whisper = [], itemData = [], limit = CONSTS.LIMIT.FREE} = {}) => {
 		const itemDataArray = itemData instanceof Array ? itemData : [itemData];
 		const labelFix = itemDataArray?.length > 1 ? "Items" : itemDataArray[0].name;
 		const buttonData = [{
@@ -189,28 +190,28 @@ export class Requestor {
 			itemDataArray,
 			label: `Claim ${labelFix}`
 		}];
-		Requestor._createCard({
+		return Requestor._createCard({
 			whisper: whisper?.length ? whisper : [],
 			buttonData,
 			limit
 		});
 	}
 	
-	static _createCard_DICE = ({whisper = [], expression = "0", flavor = "", limit = CONST.LIMIT.FREE} = {}) => {
+	static _createCard_DICE = async ({whisper = [], expression = "0", flavor = "", limit = CONSTS.LIMIT.FREE} = {}) => {
 		const buttonData = [{
 			action: () => {new Roll(args.expression, actor?.getRollData()).toMessage({speaker: ChatMessage.getSpeaker({actor}), flavor: args.flavor})},
 			label: `Roll Dice`,
 			expression,
 			flavor
 		}];
-		Requestor._createCard({
+		return Requestor._createCard({
 			whisper: whisper?.length ? whisper : [],
 			buttonData,
 			limit
 		});
 	}
 	
-	static _createCard_TEMPLATE = ({whisper = [], templateData, limit = CONST.LIMIT.FREE} = {}) => {
+	static _createCard_TEMPLATE = async ({whisper = [], templateData, limit = CONSTS.LIMIT.FREE} = {}) => {
 		const template_data = templateData ?? {
 			t: "circle",
 			x: canvas.app.renderer.plugins.interaction.mouse.getLocalPosition(canvas.app.stage).x,
@@ -232,18 +233,18 @@ export class Requestor {
 			},
 			template_data
 		}];
-		Requestor._createCard({
+		return Requestor._createCard({
 			whisper: whisper?.length ? whisper : [],
 			buttonData,
 			limit
 		});
 	}
 	
-	static _createCard_MUFFIN = () => {
+	static _createCard_MUFFIN = async () => {
 		const itemData = {
 			name: "Free Muffin",
 			type: "consumable",
-			img: CONST.MODULE_ICON,
+			img: CONSTS.MODULE_ICON,
 			data: {
 				description: {value: "<p>It's a free muffin!</p>"},
 				weight: 0.1,
@@ -258,7 +259,7 @@ export class Requestor {
 				consumableType: "food"
 			}
 		}
-		Requestor._createCard_GRANT({itemData, limit: CONST.LIMIT.ONCE});
+		return Requestor._createCard_GRANT({itemData, limit: CONSTS.LIMIT.ONCE});
 	}
 }
 

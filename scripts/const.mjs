@@ -1,4 +1,4 @@
-export const CONST = {
+export const CONSTS = {
 	MODULE_NAME: "requestor",
 	MODULE_TITLE: "Z's Requestor",
 	MODULE_TITLE_SHORT: "ZHELL",
@@ -9,5 +9,8 @@ export const CONST = {
 		ONCE: 1
 	},
 	MESSAGE_IDS: "messageIds",
-	CLICKED: "clicked"
+	CLICKED: "clicked",
+	SETTING_NAMES: {
+		TRUST_MODE: "trustMode"
+	}
 }

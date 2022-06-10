@@ -38,12 +38,11 @@ Passing an array of user ids as `whisper` in the object of the `request` will wh
 <details><summary>Muffins!</summary>
 
 ```js
-
 Requestor.request({
 	description: "Get your muffins here!",
 	title: "Muffins!",
 	buttonData: [
-		{label: "Get Muffin", action: () => actor.createEmbeddedDocuments("Item", [{
+		{label: "Get Muffin", action: async () => {await actor.createEmbeddedDocuments("Item", [{
 			name: "Muffin",
 			type: "consumable",
 			img: "icons/containers/boxes/box-gift-green.webp",
@@ -60,8 +59,8 @@ Requestor.request({
 				damage: {parts: [["1d10","healing"]]},
 				consumableType: "food"
 			}
-		}])},
-		{label: "Eat Muffin", action: () => actor.items.getName("Muffin").roll()}
+		}])}},
+		{label: "Eat Muffin", action: async () => await actor.items.getName("Muffin").roll({configureDialog: false})}
 	]
 });
 
@@ -73,12 +72,12 @@ Requestor.request({
 ```js
 Requestor.request({
     buttonData: [
-        {label: "Strength Saving Throw", action: () => actor.rollAbilitySave("str")},
-        {label: "Constitution Saving Throw", action: () => actor.rollAbilitySave("con")},
-        {label: "Dexterity Saving Throw", action: () => actor.rollAbilitySave("dex")},
-        {label: "Intelligence Saving Throw", action: () => actor.rollAbilitySave("int")},
-        {label: "Wisdom Saving Throw", action: () => actor.rollAbilitySave("wis")},
-        {label: "Charisma Saving Throw", action: () => actor.rollAbilitySave("cha")}
+        {label: "Strength Saving Throw", action: async () => {await actor.rollAbilitySave("str", {event})}},
+        {label: "Constitution Saving Throw", action: async () => {await actor.rollAbilitySave("con" {event})}},
+        {label: "Dexterity Saving Throw", action: async () => {await actor.rollAbilitySave("dex" {event})}},
+        {label: "Intelligence Saving Throw", action: async () => {await actor.rollAbilitySave("int" {event})}},
+        {label: "Wisdom Saving Throw", action: async () => {await actor.rollAbilitySave("wis" {event})}},
+        {label: "Charisma Saving Throw", action: async () => {await actor.rollAbilitySave("cha" {event})}}
     ],
     title: "Ability Checks!",
     description: "Roll <em>something</em>."

@@ -1,5 +1,5 @@
 import { Requestor } from "./requestor.mjs";
-import { CONST } from "./const.mjs";
+import { CONSTS } from "./const.mjs";
 
 export class api {
 	
@@ -18,7 +18,7 @@ export class api {
 			diceRoll: Requestor._createCard_DICE,
 			measureTemplate: Requestor._createCard_TEMPLATE,
 			grantMuffin: Requestor._createCard_MUFFIN,
-			CONST: {LIMIT: CONST.LIMIT}
+			CONST: {LIMIT: CONSTS.LIMIT}
 		}
 	}
 }
