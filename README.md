@@ -5,13 +5,15 @@ The main method is `Requestor.request({})`, whose inner object requires at least
 
 ```js
 Requestor.request({
-	whisper: [],
-	description: "This is a request.",
-	img: "icons/containers/boxes/box-gift-green.webp",
-	buttonData: [{
-		action: async () => { await actor.rollSkill("nat", {event}) },
-		label: "Nature Skill Check"
-	}]
+  whisper: [],
+  description: "This is a request.",
+  img: "icons/containers/boxes/box-gift-green.webp",
+  buttonData: [{
+    action: async () => {
+      await actor.rollSkill("nat", {event});
+    },
+    label: "Nature Skill Check"
+  }]
 });
 ```
 ![example1](https://user-images.githubusercontent.com/50169243/173181059-698b4d65-9257-482d-a18a-34c34c9e16a1.png)
@@ -41,29 +43,35 @@ Passing an array of user ids as `whisper` in the object of the `request` will wh
 
 ```js
 Requestor.request({
-	description: "Get your muffins here!",
-	title: "Muffins!",
-	buttonData: [
-		{label: "Get Muffin", action: async () => {await actor.createEmbeddedDocuments("Item", [{
-			name: "Muffin",
-			type: "consumable",
-			img: "icons/containers/boxes/box-gift-green.webp",
-			data: {
-				description: {value: "<p>It's a free muffin!</p>"},
-				weight: 0.1,
-				price: 50,
-				rarity: "common",
-				activation: {type: "action", cost: 1},
-				target: {type: "self"},
-				range: {units: "self"},
-				uses: {value: 1, max: "1", per: "charges", autoDestroy: true},
-				actionType: "heal",
-				damage: {parts: [["1d10","healing"]]},
-				consumableType: "food"
-			}
-		}])}},
-		{label: "Eat Muffin", action: async () => await actor.items.getName("Muffin").roll({configureDialog: false})}
-	]
+  description: "Get your muffins here!",
+  title: "Muffins!",
+  buttonData: [{
+    label: "Get Muffin",
+    action: async () => {
+      await actor.createEmbeddedDocuments("Item", [{
+        name: "Muffin",
+        type: "consumable",
+        img: "icons/containers/boxes/box-gift-green.webp",
+        data: {
+          description: {value: "<p>It's a free muffin!</p>"},
+          weight: 0.1,
+          price: 50,
+          rarity: "common",
+          activation: {type: "action", cost: 1},
+          target: {type: "self"},
+          range: {units: "self"},
+          uses: {value: 1, max: "1", per: "charges", autoDestroy: true},
+          actionType: "heal",
+          damage: {parts: [["1d10","healing"]]},
+          consumableType: "food"
+        }
+      }]);
+    }
+  },
+  {
+    label: "Eat Muffin",
+    action: async () => await actor.items.getName("Muffin").roll({configureDialog: false});
+  }]
 });
 ```
 ![example2](https://user-images.githubusercontent.com/50169243/173181048-16d5d230-4cb2-4934-9c19-11122cc35a2e.png)
@@ -74,17 +82,17 @@ Requestor.request({
 
 ```js
 Requestor.request({
-    buttonData: [
-        {label: "DC 14 Strength Saving Throw", action: async () => {await actor.rollAbilitySave("str", {event})}},
-        {label: "DC 12 Constitution Saving Throw", action: async () => {await actor.rollAbilitySave("con", {event})}},
-        {label: "DC 29 Dexterity Saving Throw", action: async () => {await actor.rollAbilitySave("dex", {event})}},
-        {label: "DC 11 Intelligence Saving Throw", action: async () => {await actor.rollAbilitySave("int", {event})}},
-        {label: "DC 16 Wisdom Saving Throw", action: async () => {await actor.rollAbilitySave("wis", {event})}},
-        {label: "DC 4 Charisma Saving Throw", action: async () => {await actor.rollAbilitySave("cha", {event})}}
-    ],
-    title: "Saving Throws!",
-    description: "Roll <em>something</em>.",
-	img: "icons/skills/movement/figure-running-gray.webp"
+  buttonData: [
+    {label: "DC 14 Strength Saving Throw",     action: async () => {await actor.rollAbilitySave("str", {event})}},
+    {label: "DC 12 Constitution Saving Throw", action: async () => {await actor.rollAbilitySave("con", {event})}},
+    {label: "DC 29 Dexterity Saving Throw",    action: async () => {await actor.rollAbilitySave("dex", {event})}},
+    {label: "DC 11 Intelligence Saving Throw", action: async () => {await actor.rollAbilitySave("int", {event})}},
+    {label: "DC 16 Wisdom Saving Throw",       action: async () => {await actor.rollAbilitySave("wis", {event})}},
+    {label: "DC 4 Charisma Saving Throw",      action: async () => {await actor.rollAbilitySave("cha", {event})}}
+  ],
+  title: "Saving Throws!",
+  description: "Roll <em>something</em>.",
+  img: "icons/skills/movement/figure-running-gray.webp"
 });
 ```
 ![example3](https://user-images.githubusercontent.com/50169243/173181156-6e3fe502-b495-4146-a7ed-99812b978e66.png)
