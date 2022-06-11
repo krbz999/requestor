@@ -14,6 +14,8 @@ Requestor.request({
 	}]
 });
 ```
+![example1](https://user-images.githubusercontent.com/50169243/173181059-698b4d65-9257-482d-a18a-34c34c9e16a1.png)
+
 which will display a message with a button that anyone can click and be prompted to roll Nature. The `buttonData` array can take an arbitrary number of objects.
 
 Some helper functions are pre-defined:
@@ -63,8 +65,9 @@ Requestor.request({
 		{label: "Eat Muffin", action: async () => await actor.items.getName("Muffin").roll({configureDialog: false})}
 	]
 });
-
 ```
+![example2](https://user-images.githubusercontent.com/50169243/173181048-16d5d230-4cb2-4934-9c19-11122cc35a2e.png)
+
 </details>
 
 <details><summary>Saving Throws</summary>
@@ -72,16 +75,18 @@ Requestor.request({
 ```js
 Requestor.request({
     buttonData: [
-        {label: "Strength Saving Throw", action: async () => {await actor.rollAbilitySave("str", {event})}},
-        {label: "Constitution Saving Throw", action: async () => {await actor.rollAbilitySave("con" {event})}},
-        {label: "Dexterity Saving Throw", action: async () => {await actor.rollAbilitySave("dex" {event})}},
-        {label: "Intelligence Saving Throw", action: async () => {await actor.rollAbilitySave("int" {event})}},
-        {label: "Wisdom Saving Throw", action: async () => {await actor.rollAbilitySave("wis" {event})}},
-        {label: "Charisma Saving Throw", action: async () => {await actor.rollAbilitySave("cha" {event})}}
+        {label: "DC 14 Strength Saving Throw", action: async () => {await actor.rollAbilitySave("str", {event})}},
+        {label: "DC 12 Constitution Saving Throw", action: async () => {await actor.rollAbilitySave("con", {event})}},
+        {label: "DC 29 Dexterity Saving Throw", action: async () => {await actor.rollAbilitySave("dex", {event})}},
+        {label: "DC 11 Intelligence Saving Throw", action: async () => {await actor.rollAbilitySave("int", {event})}},
+        {label: "DC 16 Wisdom Saving Throw", action: async () => {await actor.rollAbilitySave("wis", {event})}},
+        {label: "DC 4 Charisma Saving Throw", action: async () => {await actor.rollAbilitySave("cha", {event})}}
     ],
-    title: "Ability Checks!",
-    description: "Roll <em>something</em>."
+    title: "Saving Throws!",
+    description: "Roll <em>something</em>.",
+	img: "icons/skills/movement/figure-running-gray.webp"
 });
-
 ```
+![example3](https://user-images.githubusercontent.com/50169243/173181156-6e3fe502-b495-4146-a7ed-99812b978e66.png)
+
 </details>
