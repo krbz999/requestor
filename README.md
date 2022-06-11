@@ -9,10 +9,10 @@ Requestor.request({
   description: "This is a request.",
   img: "icons/containers/boxes/box-gift-green.webp",
   buttonData: [{
+    label: "Nature Skill Check",
     action: async () => {
       await actor.rollSkill("nat", {event});
-    },
-    label: "Nature Skill Check"
+    }
   }]
 });
 ```
