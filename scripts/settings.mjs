@@ -5,16 +5,22 @@ export function registerSettings(){
 }
 
 function _registerSettings(){
-	game.settings.register(CONSTS.MODULE_NAME, CONSTS.SETTING_NAMES.TRUST_MODE, {
-		name: "Enable Requesting for non-GMs",
+	const {TRUST_MODE, GM_ONLY, GM_OWN, FREE} = CONSTS.SETTING_NAMES;
+	game.settings.register(CONSTS.MODULE_NAME, TRUST_MODE, {
+		name: "Change Permissions",
 		hint: `
-			Enable this to allow non-GMs to make requests as well.
-			ONLY DO THIS IF YOU KNOW AND TRUST YOUR PLAYERS.
-			By default, players cannot make requests, and requests in the chat log will only work if they have been made by a GM.
-			If this setting is enabled, this lock is removed.`,
+			Change the permissions for who can make and accept requests.\n
+			(1) GM ONLY: Only the GM can make requests, and players can only click buttons made by a GM.\n
+			(2) GM and OWN: Anyone can make requests, and players can only click buttons made by a GM or themselves.\n
+			(3) FREE: Anyone can make requests, and anyone can click any buttons. DO NOT USE THIS SETTING if you do not know or do not fully trust your players!`,
 		scope: "world",
 		config: true,
-		type: Boolean,
-		default: false
+		type: String,
+		default: GM_ONLY,
+		choices: {
+			[GM_ONLY]: "[GM ONLY] - Request: GM only. Accept: Only if GM requested",
+			[GM_OWN]: "[GM and OWN] - Request: Anyone. Accept: Only if GM or self",
+			[FREE]: "[FREE] - Request: Anyone. Accept: Anyone"
+		}
 	});
 }

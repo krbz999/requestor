@@ -11,6 +11,9 @@ export const CONSTS = {
 	MESSAGE_IDS: "messageIds",
 	CLICKED: "clicked",
 	SETTING_NAMES: {
-		TRUST_MODE: "trustMode"
+		TRUST_MODE: "trustMode",
+		GM_ONLY: "gm-only",
+		GM_OWN: "gm-own",
+		FREE: "free"
 	}
 }

@@ -4,11 +4,14 @@ export class Requestor {
 	
 	// create chat card.
 	static _createCard = async (args = {}) => {
-		const allowPlayers = game.settings.get(CONSTS.MODULE_NAME, CONSTS.SETTING_NAMES.TRUST_MODE);
-		if(!game.user.isGM && !allowPlayers) return console.log("Only the GM is allowed to request.");
+		
+		// bail out if user is not allowed to make requests.
+		const {GM_ONLY, TRUST_MODE} = CONSTS.SETTING_NAMES;
+		const trustMode = game.settings.get(CONSTS.MODULE_NAME, TRUST_MODE);
+		if(trustMode === GM_ONLY && !game.user.isGM) return console.log("Only the GM is allowed to request.");
 		
 		// create button data.
-		const REQUESTOR_card_button_data = args.buttonData; // array of objects.
+		const REQUESTOR_card_button_data = args.buttonData ?? []; // array of objects.
 		let buttonHTML = "";
 		for(let i = 0; i < REQUESTOR_card_button_data.length; i++){
 			const REQUESTOR_card_action = "" + REQUESTOR_card_button_data[i].action;
@@ -78,9 +81,11 @@ export class Requestor {
 			// if it is only allowed to be clicked once, bail out.
 			if(args.limit === CONSTS.LIMIT.ONCE && clicked) return;
 			
-			// bail out if the message creator is not a GM.
-			const allowPlayers = game.settings.get(CONSTS.MODULE_NAME, CONSTS.SETTING_NAMES.TRUST_MODE);
-			if(!message.user.isGM && !allowPlayers) return console.log("Only the GM is allowed to request.");
+			// bail out if user is not allowed to click this button.
+			const {GM_ONLY, GM_OWN, FREE, TRUST_MODE} = CONSTS.SETTING_NAMES;
+			const trustMode = game.settings.get(CONSTS.MODULE_NAME, TRUST_MODE);
+			if(trustMode === GM_ONLY && !message.user.isGM) return console.log("The GM did not make this request.");
+			if(trustMode === GM_OWN && !(message.user.isGM || message.user === game.user)) return console.log("You are only allowed to click GM's requests or your own.");
 			
 			// turn the card's embedded flag into a function.
 			const body = `(${args.action})();`;
@@ -91,12 +96,12 @@ export class Requestor {
 			let actor = canvas.tokens.controlled[0]?.actor ?? character;
 			let token = canvas.tokens.controlled[0] ?? actor?.token;
 			
-			// execute.
-			await fn.call({}, token, character, actor, event, args);
-			
 			// if button is unlimited, remove disabled attribute.
 			if(args.limit === CONSTS.LIMIT.FREE) button.removeAttribute("disabled");
 			else await game.user.setFlag(CONSTS.MODULE_NAME, `${CONSTS.MESSAGE_IDS}.${messageId}.${buttonIndex}.${CONSTS.CLICKED}`, true);
+			
+			// execute.
+			await fn.call({}, token, character, actor, event, args);
 		});
 	}
 	
@@ -128,10 +133,11 @@ export class Requestor {
 		game.user.update(updates);
 	}
 	
-
 	static _createCard_SAVE = async ({whisper = [], ability = "int", dc = 10, limit = CONSTS.LIMIT.FREE} = {}) => {
 		const buttonData = [{
-			action: () => {actor.rollAbilitySave(args.ability, {event})},
+			action: async () => {
+				await actor.rollAbilitySave(args.ability, {event});
+			},
 			label: `Saving Throw DC ${dc} ${CONFIG.DND5E.abilities[ability]}`,
 			ability
 		}];
@@ -144,7 +150,9 @@ export class Requestor {
 	
 	static _createCard_CHECK = async ({whisper = [], ability = "int", limit = CONSTS.LIMIT.FREE} = {}) => {
 		const buttonData = [{
-			action: () => {actor.rollAbilityTest(args.ability, {event})},
+			action: async () => {
+				await actor.rollAbilityTest(args.ability, {event});
+			},
 			label: `${CONFIG.DND5E.abilities[ability]} Ability Check`,
 			ability
 		}];
@@ -157,7 +165,9 @@ export class Requestor {
 	
 	static _createCard_SKILL = async ({whisper = [], skill = "nat", limit = CONSTS.LIMIT.FREE} = {}) => {
 		const buttonData = [{
-			action: () => {actor.rollSkill(args.skill, {event})},
+			action: async () => {
+				await actor.rollSkill(args.skill, {event});
+			},
 			label: `${CONFIG.DND5E.skills[skill]} Skill Check`,
 			skill
 		}];
@@ -171,7 +181,9 @@ export class Requestor {
 	static _createCard_ROLL = async ({whisper = [], itemName = "", limit = CONSTS.LIMIT.FREE} = {}) => {
 		if(!itemName) return;
 		const buttonData = [{
-			action: () => {actor.items.getName(args.itemName)?.roll()},
+			action: async () => {
+				await actor.items.getName(args.itemName)?.roll();
+			},
 			label: `Use ${itemName}`,
 			itemName
 		}];
@@ -186,7 +198,9 @@ export class Requestor {
 		const itemDataArray = itemData instanceof Array ? itemData : [itemData];
 		const labelFix = itemDataArray?.length > 1 ? "Items" : itemDataArray[0].name;
 		const buttonData = [{
-			action: () => {actor.createEmbeddedDocuments("Item", args.itemDataArray)},
+			action: async () => {
+				await actor.createEmbeddedDocuments("Item", args.itemDataArray);
+			},
 			itemDataArray,
 			label: `Claim ${labelFix}`
 		}];
@@ -199,7 +213,12 @@ export class Requestor {
 	
 	static _createCard_DICE = async ({whisper = [], expression = "0", flavor = "", limit = CONSTS.LIMIT.FREE} = {}) => {
 		const buttonData = [{
-			action: () => {new Roll(args.expression, actor?.getRollData()).toMessage({speaker: ChatMessage.getSpeaker({actor}), flavor: args.flavor})},
+			action: async () => {
+				await new Roll(args.expression, actor?.getRollData()).toMessage({
+					speaker: ChatMessage.getSpeaker({actor}),
+					flavor: args.flavor
+				});
+			},
 			label: `Roll Dice`,
 			expression,
 			flavor
@@ -226,7 +245,6 @@ export class Requestor {
 			action: () => {
 				const template_data = args.template_data;
 				template_data.user = game.user.id;
-				
 				const doc = new CONFIG.MeasuredTemplate.documentClass(template_data, {parent: canvas.scene});
 				const template = new game.dnd5e.canvas.AbilityTemplate(doc);
 				template.drawPreview();

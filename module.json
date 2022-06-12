@@ -4,7 +4,11 @@
     "description": "A GM can use the built-in methods to create item cards with buttons for players (or the GM) to click.",
     "system": ["dnd5e"],
     "version": "v1.0.6",
-    "author": "Zhell",
+    "authors": [{
+		"name": "Zhell",
+		"url": "https://github.com/krbz999",
+		"discord": "Zhell#9201"
+	}],
     "minimumCoreVersion": "9",
     "compatibleCoreVersion": "9",
     "esmodules": [
