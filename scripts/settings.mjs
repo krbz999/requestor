@@ -9,10 +9,11 @@ function _registerSettings(){
 	game.settings.register(CONSTS.MODULE_NAME, TRUST_MODE, {
 		name: "Change Permissions",
 		hint: `
-			Change the permissions for who can make and accept requests.\n
-			(1) GM ONLY: Only the GM can make requests, and players can only click buttons made by a GM.\n
-			(2) GM and OWN: Anyone can make requests, and players can only click buttons made by a GM or themselves.\n
-			(3) FREE: Anyone can make requests, and anyone can click any buttons. DO NOT USE THIS SETTING if you do not know or do not fully trust your players!`,
+			DO NOT CHANGE THIS SETTING IF YOU DO NOT FULLY TRUST YOUR PLAYERS.
+			This changes the permissions for who can make and accept requests.
+			(1) GM ONLY: Only the GM can make requests, and players can only click buttons made by a GM.
+			(2) GM and OWN: Anyone can make requests, and players can only click buttons made by a GM or themselves.
+			(3) FREE: Anyone can make requests, and anyone can click any buttons.`,
 		scope: "world",
 		config: true,
 		type: String,

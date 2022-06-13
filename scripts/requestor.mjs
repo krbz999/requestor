@@ -5,52 +5,49 @@ export class Requestor {
 	// create chat card.
 	static _createCard = async (args = {}) => {
 		
-		// bail out if user is not allowed to make requests.
 		const {GM_ONLY, TRUST_MODE} = CONSTS.SETTING_NAMES;
-		const trustMode = game.settings.get(CONSTS.MODULE_NAME, TRUST_MODE);
+		const {MODULE_NAME, MODULE_ICON, MODULE_SPEAKER} = CONSTS;
+		
+		// bail out if user is not allowed to make requests.
+		const trustMode = game.settings.get(MODULE_NAME, TRUST_MODE);
 		if(trustMode === GM_ONLY && !game.user.isGM) return console.log("Only the GM is allowed to request.");
 		
 		// create button data.
-		const REQUESTOR_card_button_data = args.buttonData ?? []; // array of objects.
-		let buttonHTML = "";
-		for(let i = 0; i < REQUESTOR_card_button_data.length; i++){
-			const REQUESTOR_card_action = "" + REQUESTOR_card_button_data[i].action;
-			if(!REQUESTOR_card_action) return ui.notifications.error("You must pass a valid action.");
-			const REQUESTOR_card_label = REQUESTOR_card_button_data[i].label ?? "Click me!";
-			buttonHTML += `<button id="${CONSTS.MODULE_NAME}" data-index="${i}">${REQUESTOR_card_label}</button>`;
-		}
+		const buttonHTML = args.buttonData?.reduce((acc, {label, action}, i) => {
+			if(!action) return acc;
+			const buttonLabel = label ?? "Click me!";
+			return acc + `<button id="${MODULE_NAME}" data-index="${i}">${buttonLabel}</button>`;
+		}, "") ?? [];
+			
 		
-		const REQUESTOR_card_img = args.img ?? CONSTS.MODULE_ICON;
-		const REQUESTOR_card_title = args.title ?? CONSTS.MODULE_SPEAKER;
-		const REQUESTOR_card_description = args.description ?? "";
-		const REQUESTOR_card_whisper = args.whisper?.length > 0 ? args.whisper : [];
+		const img = args.img ?? MODULE_ICON;
+		const title = args.title ?? MODULE_SPEAKER;
+		const description = args.description ?? "";
+		const whisper = args.whisper?.length > 0 ? args.whisper : [];
 		
 		const messageData = {
 			speaker: ChatMessage.getSpeaker(),
 			user: game.user.id,
-			whisper: REQUESTOR_card_whisper,
+			whisper,
 			content: `
 				<div class="dnd5e chat-card item-card">
 				<header class="card-header flexrow">
-					<img src="${REQUESTOR_card_img}" title="${REQUESTOR_card_title}" width="36" height="36"/>
-					<h3 class="item-name">${REQUESTOR_card_title}</h3>
+					<img src="${img}" title="${title}" width="36" height="36"/>
+					<h3 class="item-name">${title}</h3>
 				</header>
 				<div class="card-content">
-					${REQUESTOR_card_description}
+					${description}
 				</div>
 				<div class="card-buttons">
 					${buttonHTML}
 				</div>`
 		}
-		messageData[`flags.${CONSTS.MODULE_NAME}.args`] = args;
-		messageData[`flags.${CONSTS.MODULE_NAME}.limit`] = args.limit ?? CONSTS.LIMIT.FREE;
-		for(let i = 0; i < REQUESTOR_card_button_data.length; i++){
-			messageData[`flags.${CONSTS.MODULE_NAME}.args`].buttonData[i].action = "" + REQUESTOR_card_button_data[i].action;
-			
-			// if button has been given no limit, use card's limit.
-			if(!messageData[`flags.${CONSTS.MODULE_NAME}.args`].buttonData[i].limit){
-				messageData[`flags.${CONSTS.MODULE_NAME}.args`].buttonData[i].limit = messageData[`flags.${CONSTS.MODULE_NAME}.limit`];
-			}
+		messageData[`flags.${MODULE_NAME}.args`] = args;
+		
+		for(let btnData of args.buttonData ?? []){
+			btnData.action = "" + btnData.action;
+			// use button's limit if defined, else card's limit if defined, else free.
+			btnData.limit = btnData.limit !== undefined ? btnData.limit : (args.limit !== undefined) ? args.limit : CONSTS.LIMIT.FREE;
 		}
 		
 		return ChatMessage.create(messageData);
@@ -59,8 +56,10 @@ export class Requestor {
 	static _onClickButton = (_chatLog, html) => {
 		html[0].addEventListener("click", async (event) => {
 			
+			const {LIMIT, MODULE_NAME, MESSAGE_IDS, CLICKED, CLICKED_OPTION} = CONSTS;
+			
 			// make sure it's a Requestor button.
-			const button = event.target?.closest(`button[id="${CONSTS.MODULE_NAME}"]`);
+			const button = event.target?.closest(`button[id="${MODULE_NAME}"]`);
 			if(!button) return;
 			
 			// get the button index (starting at 0).
@@ -72,18 +71,23 @@ export class Requestor {
 			const message = game.messages.get(messageId);
 			
 			// get whether the user has clicked this button already.
-			const buttonFlag = game.user.getFlag(CONSTS.MODULE_NAME, `${CONSTS.MESSAGE_IDS}.${messageId}.${buttonIndex}`);
-			const clicked = !!buttonFlag?.clicked;
+			const clickedButton = !!game.user.getFlag(MODULE_NAME, `${MESSAGE_IDS}.${messageId}.${buttonIndex}.${CLICKED}`);
+			
+			// get whether the user has clicked an OPTION button on this card already.
+			const clickedCardOption = !!game.user.getFlag(MODULE_NAME, `${MESSAGE_IDS}.${messageId}.${CLICKED_OPTION}`);
 			
 			// get the args.
-			const args = message.getFlag(CONSTS.MODULE_NAME, "args.buttonData")[buttonIndex];
+			const args = message.getFlag(MODULE_NAME, "args.buttonData")[buttonIndex];
 			
-			// if it is only allowed to be clicked once, bail out.
-			if(args.limit === CONSTS.LIMIT.ONCE && clicked) return;
+			// if it is only allowed to be clicked once, and is already clicked, bail out.
+			if((args.limit === LIMIT.ONCE) && clickedButton) return;
+			
+			// if it is one of several options, and an option on this message has already been clicked, bail out.
+			if((args.limit === LIMIT.OPTION) && clickedCardOption) return;
 			
 			// bail out if user is not allowed to click this button.
 			const {GM_ONLY, GM_OWN, FREE, TRUST_MODE} = CONSTS.SETTING_NAMES;
-			const trustMode = game.settings.get(CONSTS.MODULE_NAME, TRUST_MODE);
+			const trustMode = game.settings.get(MODULE_NAME, TRUST_MODE);
 			if(trustMode === GM_ONLY && !message.user.isGM) return console.log("The GM did not make this request.");
 			if(trustMode === GM_OWN && !(message.user.isGM || message.user === game.user)) return console.log("You are only allowed to click GM's requests or your own.");
 			
@@ -97,8 +101,13 @@ export class Requestor {
 			let token = canvas.tokens.controlled[0] ?? actor?.token;
 			
 			// if button is unlimited, remove disabled attribute.
-			if(args.limit === CONSTS.LIMIT.FREE) button.removeAttribute("disabled");
-			else await game.user.setFlag(CONSTS.MODULE_NAME, `${CONSTS.MESSAGE_IDS}.${messageId}.${buttonIndex}.${CONSTS.CLICKED}`, true);
+			if(args.limit === LIMIT.FREE) button.removeAttribute("disabled");
+				
+			// if button is limited, flag user as having clicked this button.
+			if(args.limit === LIMIT.ONCE) await game.user.setFlag(MODULE_NAME, `${MESSAGE_IDS}.${messageId}.${buttonIndex}.${CLICKED}`, true);
+			
+			// if button is one of several options, flag user as having clicked an option on this card.
+			if(args.limit === LIMIT.OPTION) await game.user.setFlag(MODULE_NAME, `${MESSAGE_IDS}.${messageId}.${CLICKED_OPTION}`, true);
 			
 			// execute.
 			await fn.call({}, token, character, actor, event, args);
@@ -106,31 +115,61 @@ export class Requestor {
 	}
 	
 	// remove user flags if the message is gone.
-	// set disabled attribute if message exists and is limited.
-	static _setDisabledState = async (_chatLog, html) => {
+	static _removeDeprecatedFlags = async (_chatLog, html) => {
+		const {MODULE_NAME, MESSAGE_IDS, CLICKED, CLICKED_OPTION, LIMIT} = CONSTS;
+		
 		// get user flags
-		const flags = game.user.getFlag(CONSTS.MODULE_NAME, CONSTS.MESSAGE_IDS);
+		const flags = game.user.getFlag(MODULE_NAME, MESSAGE_IDS);
 		if(!flags) return;
 		const messageIds = Object.keys(flags);
+		
 		const updates = {};
 		
-		// for each message id, find chatLog.collection.get(id)
+		// for each message id, attempt to find the message.
 		for(let id of messageIds){
-			let message = html[0].querySelector(`[data-message-id="${id}"]`);
-			if(!message) updates[`flags.${CONSTS.MODULE_NAME}.${CONSTS.MESSAGE_IDS}.-=${id}`] = null;
-			else{
-				let buttons = message.querySelectorAll(`button#${CONSTS.MODULE_NAME}`);
-				for(let button of buttons){
-					let buttonIndex = button.getAttribute("data-index");
-					if(game.user.getFlag(CONSTS.MODULE_NAME, `${CONSTS.MESSAGE_IDS}.${id}.${buttonIndex}.${CONSTS.CLICKED}`)){
-						button.setAttribute("disabled", "");
-					}
-				}
+			let message = game.messages.get(id);
+			if(!message) updates[`flags.${MODULE_NAME}.${MESSAGE_IDS}.-=${id}`] = null;
+		}
+		await game.user.update(updates);
+	}
+	
+	// trigger enable/disable of buttons when a message is rendered.
+	// each message is rendered individually when the chatLog is rendered.
+	static _setDisabledStateMessageRender = async (chatMessage, html) => {
+		const messageHTML = html[0];
+		const messageDoc = chatMessage;
+		const messageId = chatMessage.id;
+		
+		this._setDisabledState(messageHTML, messageDoc, messageId);
+	}
+	
+	// set enabled state of buttons depending on user flags.
+	static _setDisabledState = async (html, doc, id) => {
+		const {MODULE_NAME, MESSAGE_IDS, CLICKED, CLICKED_OPTION, LIMIT} = CONSTS;
+		
+		const messageHTML = html;
+		const messageDoc = doc;
+		const messageId = id;
+		
+		if(!messageHTML || !messageDoc) return;
+		
+		// if the message is found, get all of its buttons.
+		let buttons = messageHTML.querySelectorAll(`button#${MODULE_NAME}`);
+		
+		// for each button, if the button is limited and clicked, set it to be disabled.
+		// if a button is an option, and the user has clicked an option on this card, set it to be disabled.
+		for(let button of buttons){
+			// get the index of the button to find the user's flag.
+			let buttonIndex = button.getAttribute("data-index");
+			
+			// this flag only exists if a ONCE button has been clicked.
+			if(game.user.getFlag(MODULE_NAME, `${MESSAGE_IDS}.${messageId}.${buttonIndex}.${CLICKED}`)) button.setAttribute("disabled", "");
+			
+			// if OPTION, and an option has been clicked, disable the button.
+			if(game.user.getFlag(MODULE_NAME, `${MESSAGE_IDS}.${messageId}.${CLICKED_OPTION}`)){
+				if(messageDoc.getFlag(MODULE_NAME, "args.buttonData")?.[buttonIndex]?.limit === LIMIT.OPTION) button.setAttribute("disabled", "");
 			}
 		}
-		
-		// if message not found, unset game.user.data.flags.requestor.messageIds.id
-		game.user.update(updates);
 	}
 	
 	static _createCard_SAVE = async ({whisper = [], ability = "int", dc = 10, limit = CONSTS.LIMIT.FREE} = {}) => {
@@ -284,5 +323,5 @@ export class Requestor {
 Hooks.on("renderChatLog", Requestor._onClickButton);
 Hooks.on("renderChatPopout", Requestor._onClickButton);
 
-Hooks.on("renderChatLog", Requestor._setDisabledState);
-Hooks.on("renderChatPopout", Requestor._setDisabledState);
+Hooks.on("renderChatMessage", Requestor._setDisabledStateMessageRender);
+Hooks.on("renderChatLog", Requestor._removeDeprecatedFlags);
