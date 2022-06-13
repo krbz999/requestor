@@ -98,3 +98,20 @@ Requestor.request({
 ![example3](https://user-images.githubusercontent.com/50169243/173181156-6e3fe502-b495-4146-a7ed-99812b978e66.png)
 
 </details>
+
+<details><summary>Options</summary>
+
+```js
+await Requestor.request({
+  description: "You may pick only one.",
+  buttonData: [
+    {label: "OPTION 1",    action: () => ui.notifications.info("CLICKED FIRST!"),  limit: 2},
+    {label: "OPTION 2",    action: () => ui.notifications.info("CLICKED SECOND!"), limit: 2},
+    {label: "OPTION 3",    action: () => ui.notifications.info("CLICKED THIRD!"),  limit: 2},
+    {label: "Free Clicks", action: () => ui.notifications.info("Hello World."),    limit: 0}
+  ]
+});
+```
+![image](https://user-images.githubusercontent.com/50169243/173451017-dcb23d05-d45a-4316-bec7-e6e09724beb3.png)
+
+</details>
