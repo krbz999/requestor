@@ -67,7 +67,8 @@ export class Requestor {
 			
 			// get the chat card.
 			const card = button.closest(".chat-card");
-			const messageId = card.closest(".message").dataset.messageId;
+			const cardHTML = card.closest(".message");
+			const messageId = cardHTML.dataset.messageId;
 			const message = game.messages.get(messageId);
 			
 			// get whether the user has clicked this button already.
@@ -107,7 +108,12 @@ export class Requestor {
 			if(args.limit === LIMIT.ONCE) await game.user.setFlag(MODULE_NAME, `${MESSAGE_IDS}.${messageId}.${buttonIndex}.${CLICKED}`, true);
 			
 			// if button is one of several options, flag user as having clicked an option on this card.
-			if(args.limit === LIMIT.OPTION) await game.user.setFlag(MODULE_NAME, `${MESSAGE_IDS}.${messageId}.${CLICKED_OPTION}`, true);
+			if(args.limit === LIMIT.OPTION){
+				await game.user.setFlag(MODULE_NAME, `${MESSAGE_IDS}.${messageId}.${CLICKED_OPTION}`, true);
+				
+				// render the card again to disable other options.
+				await Requestor._setDisabledStateMessageRender(message, [cardHTML]);
+			}
 			
 			// execute.
 			await fn.call({}, token, character, actor, event, args);
@@ -136,6 +142,7 @@ export class Requestor {
 	// trigger enable/disable of buttons when a message is rendered.
 	// each message is rendered individually when the chatLog is rendered.
 	static _setDisabledStateMessageRender = async (chatMessage, html) => {
+		
 		const messageHTML = html[0];
 		const messageDoc = chatMessage;
 		const messageId = chatMessage.id;
