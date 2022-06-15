@@ -1,7 +1,7 @@
 # Z's Requestor
 A GM can use the built-in methods to create item cards with buttons for players (or the GM) to click.
 
-The main method is `Requestor.request({})`, whose inner object requires at least an array of objects `buttonData`. Example:
+The main method is `Requestor.request({})`, whose inner object requires at least an array of objects `buttonData`. Example (for `dnd5e`):
 
 ```js
 Requestor.request({
@@ -22,24 +22,28 @@ which will display a message with a button that anyone can click and be prompted
 
 Some helper functions are pre-defined:
 * `Requestor.request`: the base function.
+* `Requestor.diceRoll`: a request for a player to roll a set of dice, requires array of ids (strings), an expression (string), and flavor (string). Supports scaling values.
+* `Requestor.itemGrant`: a request for an actor to claim an item or array of items, requires array of ids (strings) and item data or array of item data.
+
+Methods specific to `dnd5e`:
 * `Requestor.abilitySave`: a request for a saving throw, requires array of ids (strings), three-letter key (string), and DC (integer).
 * `Requestor.abilityTest`: a request for an ability check, requires array of ids (strings) and three-letter key (string).
 * `Requestor.rollSkill`: a request for an ability check using a skill, requires array of ids (strings) and three-letter key (string).
 * `Requestor.itemRoll`: a request for an actor to use one of their items, requires requires array of ids (strings) and the item's name (string).
-* `Requestor.itemGrant`: a request for an actor to claim an item or array of items, requires array of ids (strings) and item data or array of item data.
-* `Requestor.diceRoll`: a request for a player to roll a set of dice, requires array of ids (strings), an expression (string), and flavor (string). Supports scaling values.
 * `Requestor.measureTemplate`: a request for a player to place a template, requires an array of ids (strings) and template data (object, defaults to 20-foot circle). Don't pass a user to the template data.
 * `Requestor.grantMuffin`: a request for an actor to be granted a muffin which restores 1d10 hit points when consumed, requires array of ids (strings).
 
 Passing an array of user ids as `whisper` in the object of the `request` will whisper the request to those clients only. If none are passed (or by passing an empty array), the request appears for all.
 
 ### Compatibility
-* `Better Rolls for 5e`: Unknown.
-* `Midi-QoL`: Appears to have no issues.
-* `Minimal Rolling Enhancements`: No issues.
+As of v1.1.0, Requestor is system-agnostic.
+
+* `dnd5e`: Unknown compatbility with `Better Rolls`; `Midi-QoL` and `Minimal Rolling Enhancements` have no issues.
+* `pf2e`: Confirmed to work.
+* `nova`: Confirmed to work.
 
 ### Examples
-<details><summary>Muffins!</summary>
+<details><summary>Muffins! (dnd5e)</summary>
 
 ```js
 Requestor.request({
@@ -78,7 +82,9 @@ Requestor.request({
 
 </details>
 
-<details><summary>Saving Throws</summary>
+<details><summary>Saving Throws (dnd5e)</summary>
+
+Setting the `limit` of a button to 1 makes it able to be clicked only once. In this example, the buttons don't have a limit defined; they then default to the card's limit.
 
 ```js
 Requestor.request({
@@ -92,7 +98,8 @@ Requestor.request({
   ],
   title: "Saving Throws!",
   description: "Roll <em>something</em>.",
-  img: "icons/skills/movement/figure-running-gray.webp"
+  img: "icons/skills/movement/figure-running-gray.webp",
+  limit: Requestor.CONST.LIMIT.ONCE
 });
 ```
 ![example3](https://user-images.githubusercontent.com/50169243/173181156-6e3fe502-b495-4146-a7ed-99812b978e66.png)
@@ -101,14 +108,16 @@ Requestor.request({
 
 <details><summary>Options</summary>
 
+Setting the `limit` of a group of buttons to 2 makes each of them exclusive; a user can click only one of them.
+
 ```js
 await Requestor.request({
   description: "You may pick only one.",
   buttonData: [
-    {label: "OPTION 1",    action: () => ui.notifications.info("CLICKED FIRST!"),  limit: 2},
-    {label: "OPTION 2",    action: () => ui.notifications.info("CLICKED SECOND!"), limit: 2},
-    {label: "OPTION 3",    action: () => ui.notifications.info("CLICKED THIRD!"),  limit: 2},
-    {label: "Free Clicks", action: () => ui.notifications.info("Hello World."),    limit: 0}
+    {label: "OPTION 1",    action: () => ui.notifications.info("CLICKED FIRST!"),  limit: Requestor.CONST.LIMIT.OPTION},
+    {label: "OPTION 2",    action: () => ui.notifications.info("CLICKED SECOND!"), limit: Requestor.CONST.LIMIT.OPTION},
+    {label: "OPTION 3",    action: () => ui.notifications.info("CLICKED THIRD!"),  limit: Requestor.CONST.LIMIT.OPTION},
+    {label: "Free Clicks", action: () => ui.notifications.info("Hello World."),    limit: Requestor.CONST.LIMIT.FREE}
   ]
 });
 ```

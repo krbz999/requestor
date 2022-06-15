@@ -1,9 +1,9 @@
 {
     "name": "requestor",
     "title": "Z's Requestor",
-    "description": "A GM can use the built-in methods to create item cards with buttons for players (or the GM) to click.",
-    "system": ["dnd5e"],
-    "version": "v1.0.6",
+    "description": "A GM can use the built-in methods to create chat cards with buttons for players (or the GM) to click.",
+    "system": [],
+    "version": "v1.1.0",
     "authors": [{
 		"name": "Zhell",
 		"url": "https://github.com/krbz999",
@@ -15,6 +15,7 @@
 		"./setup.js",
 		"./scripts/requestor.mjs"
 	],
+	"styles": ["./scripts/styles.css"],
 	"scripts": [],
     "url": "https://github.com/krbz999/requestor",
     "manifest": "https://github.com/krbz999/requestor/releases/latest/download/module.json",

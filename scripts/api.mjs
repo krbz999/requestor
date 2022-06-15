@@ -1,4 +1,4 @@
-import { Requestor } from "./requestor.mjs";
+import { REQUESTOR } from "./requestor.mjs";
 import { CONSTS } from "./const.mjs";
 
 export class api {
@@ -9,16 +9,19 @@ export class api {
 	
 	static globals(){
 		globalThis.Requestor = {
-			request: Requestor._createCard,
-			abilitySave: Requestor._createCard_SAVE,
-			abilityTest: Requestor._createCard_CHECK,
-			rollSkill: Requestor._createCard_SKILL,
-			itemRoll: Requestor._createCard_ROLL,
-			itemGrant: Requestor._createCard_GRANT,
-			diceRoll: Requestor._createCard_DICE,
-			measureTemplate: Requestor._createCard_TEMPLATE,
-			grantMuffin: Requestor._createCard_MUFFIN,
-			CONST: {LIMIT: CONSTS.LIMIT}
+			CONST: {LIMIT: CONSTS.LIMIT},
+			request: REQUESTOR._createCard,
+			itemGrant: REQUESTOR._createCard_GRANT,
+			diceRoll: REQUESTOR._createCard_DICE
 		}
+	}
+	
+	static globalsDND5E(){
+		Requestor.abilitySave = REQUESTOR._createCard_SAVE;
+		Requestor.abilityTest = REQUESTOR._createCard_CHECK;
+		Requestor.rollSkill = REQUESTOR._createCard_SKILL;
+		Requestor.measureTemplate = REQUESTOR._createCard_TEMPLATE;
+		Requestor.grantMuffin = REQUESTOR._createCard_MUFFIN;
+		Requestor.itemRoll = REQUESTOR._createCard_ROLL;
 	}
 }

@@ -16,6 +16,7 @@ export const CONSTS = {
 		TRUST_MODE: "trustMode",
 		GM_ONLY: "gm-only",
 		GM_OWN: "gm-own",
-		FREE: "free"
+		FREE: "free",
+		USE_SYSTEM_CLASS: "useSystemClass"
 	}
 }

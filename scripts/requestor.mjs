@@ -1,11 +1,11 @@
 import { CONSTS } from "./const.mjs";
 
-export class Requestor {
+export class REQUESTOR {
 	
 	// create chat card.
 	static _createCard = async (args = {}) => {
 		
-		const {GM_ONLY, TRUST_MODE} = CONSTS.SETTING_NAMES;
+		const {GM_ONLY, TRUST_MODE, USE_SYSTEM_CLASS} = CONSTS.SETTING_NAMES;
 		const {MODULE_NAME, MODULE_ICON, MODULE_SPEAKER} = CONSTS;
 		
 		// bail out if user is not allowed to make requests.
@@ -17,32 +17,42 @@ export class Requestor {
 			if(!action) return acc;
 			const buttonLabel = label ?? "Click me!";
 			return acc + `<button id="${MODULE_NAME}" data-index="${i}">${buttonLabel}</button>`;
-		}, "") ?? [];
+		}, ``) ?? "";
 			
 		
 		const img = args.img ?? MODULE_ICON;
 		const title = args.title ?? MODULE_SPEAKER;
 		const description = args.description ?? "";
+		const footer = args.footer?.reduce((acc, e) => acc += `<span>${e}</span>`, ``) ?? "";
 		const whisper = args.whisper?.length > 0 ? args.whisper : [];
+		
+		const systemName = game.system.data.name;
+		const useSystemClass = !!game.settings.get(MODULE_NAME, USE_SYSTEM_CLASS);
+		const divClass = useSystemClass ? systemName : MODULE_NAME;
 		
 		const messageData = {
 			speaker: ChatMessage.getSpeaker(),
 			user: game.user.id,
 			whisper,
 			content: `
-				<div class="dnd5e chat-card item-card">
-				<header class="card-header flexrow">
-					<img src="${img}" title="${title}" width="36" height="36"/>
-					<h3 class="item-name">${title}</h3>
-				</header>
-				<div class="card-content">
-					${description}
-				</div>
-				<div class="card-buttons">
-					${buttonHTML}
+				<div class="${divClass} chat-card">
+					<header class="card-header flexrow">
+						<img src="${img}" title="${title}" width="36" height="36"/>
+						<h3 class="item-name">${title}</h3>
+					</header>
+					<div class="card-content">
+						${description}
+					</div>
+					<div class="card-buttons">
+						${buttonHTML}
+					</div>
+					<footer class="card-footer">
+						${footer}
+					</footer>
 				</div>`
 		}
 		messageData[`flags.${MODULE_NAME}.args`] = args;
+		messageData["flags.core.canPopout"] = true;
 		
 		for(let btnData of args.buttonData ?? []){
 			btnData.action = "" + btnData.action;
@@ -105,14 +115,17 @@ export class Requestor {
 			if(args.limit === LIMIT.FREE) button.removeAttribute("disabled");
 				
 			// if button is limited, flag user as having clicked this button.
-			if(args.limit === LIMIT.ONCE) await game.user.setFlag(MODULE_NAME, `${MESSAGE_IDS}.${messageId}.${buttonIndex}.${CLICKED}`, true);
+			if(args.limit === LIMIT.ONCE){
+				await game.user.setFlag(MODULE_NAME, `${MESSAGE_IDS}.${messageId}.${buttonIndex}.${CLICKED}`, true);
+				await REQUESTOR._setDisabledStateMessageRender(message, [cardHTML]);
+			}
 			
 			// if button is one of several options, flag user as having clicked an option on this card.
 			if(args.limit === LIMIT.OPTION){
 				await game.user.setFlag(MODULE_NAME, `${MESSAGE_IDS}.${messageId}.${CLICKED_OPTION}`, true);
 				
 				// render the card again to disable other options.
-				await Requestor._setDisabledStateMessageRender(message, [cardHTML]);
+				await REQUESTOR._setDisabledStateMessageRender(message, [cardHTML]);
 			}
 			
 			// execute.
@@ -187,7 +200,7 @@ export class Requestor {
 			label: `Saving Throw DC ${dc} ${CONFIG.DND5E.abilities[ability]}`,
 			ability
 		}];
-		return Requestor._createCard({
+		return REQUESTOR._createCard({
 			whisper: whisper?.length ? whisper : [],
 			buttonData,
 			limit
@@ -202,7 +215,7 @@ export class Requestor {
 			label: `${CONFIG.DND5E.abilities[ability]} Ability Check`,
 			ability
 		}];
-		return Requestor._createCard({
+		return REQUESTOR._createCard({
 			whisper: whisper?.length ? whisper : [],
 			buttonData,
 			limit
@@ -217,7 +230,7 @@ export class Requestor {
 			label: `${CONFIG.DND5E.skills[skill]} Skill Check`,
 			skill
 		}];
-		return Requestor._createCard({
+		return REQUESTOR._createCard({
 			whisper: whisper?.length ? whisper : [],
 			buttonData,
 			limit
@@ -233,7 +246,7 @@ export class Requestor {
 			label: `Use ${itemName}`,
 			itemName
 		}];
-		return Requestor._createCard({
+		return REQUESTOR._createCard({
 			whisper: whisper?.length ? whisper : [],
 			buttonData,
 			limit
@@ -250,7 +263,7 @@ export class Requestor {
 			itemDataArray,
 			label: `Claim ${labelFix}`
 		}];
-		return Requestor._createCard({
+		return REQUESTOR._createCard({
 			whisper: whisper?.length ? whisper : [],
 			buttonData,
 			limit
@@ -269,7 +282,7 @@ export class Requestor {
 			expression,
 			flavor
 		}];
-		return Requestor._createCard({
+		return REQUESTOR._createCard({
 			whisper: whisper?.length ? whisper : [],
 			buttonData,
 			limit
@@ -297,7 +310,7 @@ export class Requestor {
 			},
 			template_data
 		}];
-		return Requestor._createCard({
+		return REQUESTOR._createCard({
 			whisper: whisper?.length ? whisper : [],
 			buttonData,
 			limit
@@ -323,12 +336,12 @@ export class Requestor {
 				consumableType: "food"
 			}
 		}
-		return Requestor._createCard_GRANT({itemData, limit: CONSTS.LIMIT.ONCE});
+		return REQUESTOR._createCard_GRANT({itemData, limit: CONSTS.LIMIT.ONCE});
 	}
 }
 
-Hooks.on("renderChatLog", Requestor._onClickButton);
-Hooks.on("renderChatPopout", Requestor._onClickButton);
+Hooks.on("renderChatLog", REQUESTOR._onClickButton);
+Hooks.on("renderChatPopout", REQUESTOR._onClickButton);
 
-Hooks.on("renderChatMessage", Requestor._setDisabledStateMessageRender);
-Hooks.on("renderChatLog", Requestor._removeDeprecatedFlags);
+Hooks.on("renderChatMessage", REQUESTOR._setDisabledStateMessageRender);
+Hooks.on("renderChatLog", REQUESTOR._removeDeprecatedFlags);

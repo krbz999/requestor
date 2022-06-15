@@ -5,7 +5,17 @@ export function registerSettings(){
 }
 
 function _registerSettings(){
-	const {TRUST_MODE, GM_ONLY, GM_OWN, FREE} = CONSTS.SETTING_NAMES;
+	const {TRUST_MODE, GM_ONLY, GM_OWN, FREE, USE_SYSTEM_CLASS} = CONSTS.SETTING_NAMES;
+	
+	game.settings.register(CONSTS.MODULE_NAME, USE_SYSTEM_CLASS, {
+		name: "Use System Cards (experimental)",
+		hint: "Attempt to use the system's UI for Requestor chat cards. This may not work for all systems.",
+		scope: "world",
+		config: true,
+		type: Boolean,
+		default: false
+	});
+	
 	game.settings.register(CONSTS.MODULE_NAME, TRUST_MODE, {
 		name: "Change Permissions",
 		hint: `
