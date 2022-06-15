@@ -38,7 +38,7 @@ Passing an array of user ids as `whisper` in the object of the `request` will wh
 ### Compatibility
 As of v1.1.0, Requestor is system-agnostic.
 
-* `dnd5e`: Unknown compatbility with `Better Rolls`; `Midi-QoL` and `Minimal Rolling Enhancements` have no issues.
+* `dnd5e`: Unknown compatibility with `Better Rolls`; `Midi-QoL` and `Minimal Rolling Enhancements` have no issues.
 * `pf2e`: Confirmed to work.
 * `nova`: Confirmed to work.
 
