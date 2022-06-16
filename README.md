@@ -49,11 +49,11 @@ const actorName = actor.name;
 
 const buttonData = [{
   action: async () => {
-    await ChatMessage.create({content: `${args.actorName} clicked a button.`});
+    await ChatMessage.create({content: `${game.user.name} clicked a button made by ${args.userName}.`});
   },
   label: "Create a message",
   limit: Requestor.CONST.LIMIT.ONCE,
-  actorName
+  userName: "Steve"
 }];
 ```
 
