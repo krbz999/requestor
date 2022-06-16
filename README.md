@@ -52,6 +52,7 @@ const buttonData = [{
     await ChatMessage.create({content: `${args.actorName} clicked a button.`});
   },
   label: "Create a message",
+  limit: Requestor.CONST.LIMIT.ONCE,
   actorName
 }];
 ```
