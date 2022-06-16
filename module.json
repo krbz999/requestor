@@ -16,6 +16,11 @@
 		"./scripts/requestor.mjs"
 	],
 	"styles": ["./scripts/styles.css"],
+	"languages": [{
+		"lang": "en",
+		"name": "English",
+		"path": "langs/en.json"
+	}],
 	"scripts": [],
     "url": "https://github.com/krbz999/requestor",
     "manifest": "https://github.com/krbz999/requestor/releases/latest/download/module.json",

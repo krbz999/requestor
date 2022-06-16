@@ -25,15 +25,20 @@ export class REQUESTOR {
 		const description = args.description ?? "";
 		const footer = args.footer?.reduce((acc, e) => acc += `<span>${e}</span>`, ``) ?? "";
 		const whisper = args.whisper?.length > 0 ? args.whisper : [];
+		const sound = args.sound ?? "";
+		const speaker = args.speaker ?? ChatMessage.getSpeaker();
 		
+		// define chat card class.
 		const systemName = game.system.data.name;
 		const useSystemClass = !!game.settings.get(MODULE_NAME, USE_SYSTEM_CLASS);
 		const divClass = useSystemClass ? systemName : MODULE_NAME;
 		
+		// construct message data object.
 		const messageData = {
-			speaker: ChatMessage.getSpeaker(),
+			speaker,
 			user: game.user.id,
 			whisper,
+			sound,
 			content: `
 				<div class="${divClass} chat-card">
 					<header class="card-header flexrow">
@@ -51,6 +56,8 @@ export class REQUESTOR {
 					</footer>
 				</div>`
 		}
+		
+		// construct message flags.
 		messageData[`flags.${MODULE_NAME}.args`] = args;
 		messageData["flags.core.canPopout"] = true;
 		
@@ -60,7 +67,10 @@ export class REQUESTOR {
 			btnData.limit = btnData.limit !== undefined ? btnData.limit : (args.limit !== undefined) ? args.limit : CONSTS.LIMIT.FREE;
 		}
 		
-		return ChatMessage.create(messageData);
+		// add context object.
+		const context = args.context ? {[MODULE_NAME]: args.context} : {};
+		
+		return ChatMessage.create(messageData, context);
 	}
 	
 	static _onClickButton = (_chatLog, html) => {
@@ -128,7 +138,10 @@ export class REQUESTOR {
 				await REQUESTOR._setDisabledStateMessageRender(message, [cardHTML]);
 			}
 			
-			// execute.
+			// if message context is set to close on button clicks, close all popouts.
+			if(message.getFlag(MODULE_NAME, "args.context.autoClose")) REQUESTOR._closeAllPopouts(message);
+			
+			// execute the embedded function.
 			await fn.call({}, token, character, actor, event, args);
 		});
 	}
@@ -189,6 +202,27 @@ export class REQUESTOR {
 			if(game.user.getFlag(MODULE_NAME, `${MESSAGE_IDS}.${messageId}.${CLICKED_OPTION}`)){
 				if(messageDoc.getFlag(MODULE_NAME, "args.buttonData")?.[buttonIndex]?.limit === LIMIT.OPTION) button.setAttribute("disabled", "");
 			}
+		}
+	}
+	
+	// create popout if such context is provided.
+	static _popoutFocusMessage = (message, context) => {
+		const {MODULE_NAME} = CONSTS;
+		if(!!context[MODULE_NAME]?.popout){
+			new ChatPopout(message, {
+				scale: context[MODULE_NAME].scale ?? 1.5,
+				left: context[MODULE_NAME].left ?? screen.width/3,
+				top: context[MODULE_NAME].top ?? 100
+			}).render(true);
+		}
+	}
+	
+	// close all popouts of a message.
+	static _closeAllPopouts = (message) => {
+		console.log(message);
+		for(let value of Object.values(message.apps)){
+			console.log(value);
+			if(value?.popOut && value?.rendered) value?.close();
 		}
 	}
 	
@@ -345,3 +379,5 @@ Hooks.on("renderChatPopout", REQUESTOR._onClickButton);
 
 Hooks.on("renderChatMessage", REQUESTOR._setDisabledStateMessageRender);
 Hooks.on("renderChatLog", REQUESTOR._removeDeprecatedFlags);
+
+Hooks.on("createChatMessage", REQUESTOR._popoutFocusMessage);

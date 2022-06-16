@@ -20,6 +20,39 @@ Requestor.request({
 
 which will display a message with a button that anyone can click and be prompted to roll Nature. The `buttonData` array can take an arbitrary number of objects.
 
+## How to use:
+Create the following constants, all of which are optional:
+* img; the image to use in the card (defaults to a core FA icon).
+* title; the title to use in the card (defaults to 'Requestor').
+* description; the text description in the card (defaults to an empty string).
+* footer; an array of strings to be displayed beneath the buttons of the card (defaults to empty).
+* whisper; an array of user ids that the message will be shown to (defaults to all users).
+* sound; a sound to play when the message is created (defaults to no sound).
+* speaker; standard speaker object (defaults to user).
+* buttonData; an array of objects, detailed below.
+* context; an object used to pop out the message for all users; use `popout: true` to create a popout, and `autoClose: true` to close the popout after any click on a button. Other values include `scale` (default 1.5), `left` (default `screen.width/3`), and `top` (default 100).
+* limit; the limt of the buttons that do not have their own set limit. The values are `Requestor.CONST.LIMIT.FREE` (for buttons that can be clicked as much as a user would want), `.ONCE` (for a button that can be clicked only once), and `.OPTION` (for buttons that can be clicked only once, and also disables all other buttons on the card set to `.OPTION`).
+
+### buttonData array
+The `buttonData` array is an array of objects detailing the buttons that go on the card. Each object should have an `action` (an arrow function) and a `label` (a string). Any special parameters that should be used in the function but are unavailable due to scope can be passed in the object as well and referenced with prefixing `args.`.
+
+Example:
+
+```js
+
+const actorName = actor.name;
+
+const buttonData = [{
+  action: async () => {
+    await ChatMessage.create({content: `${args.actorName} clicked a button.`});
+  },
+  label: "Create a message",
+  actorName
+}];
+```
+
+## Helper functions
+
 Some helper functions are pre-defined:
 * `Requestor.request`: the base function.
 * `Requestor.diceRoll`: a request for a player to roll a set of dice, requires array of ids (strings), an expression (string), and flavor (string). Supports scaling values.
@@ -35,14 +68,14 @@ Methods specific to `dnd5e`:
 
 Passing an array of user ids as `whisper` in the object of the `request` will whisper the request to those clients only. If none are passed (or by passing an empty array), the request appears for all.
 
-### Compatibility
+## Compatibility
 As of v1.1.0, Requestor is system-agnostic.
 
 * `dnd5e`: Unknown compatibility with `Better Rolls`; `Midi-QoL` and `Minimal Rolling Enhancements` have no issues.
 * `pf2e`: Confirmed to work.
 * `nova`: Confirmed to work.
 
-### Examples
+## Examples
 <details><summary>Muffins! (dnd5e)</summary>
 
 ```js
