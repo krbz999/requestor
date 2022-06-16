@@ -219,9 +219,7 @@ export class REQUESTOR {
 	
 	// close all popouts of a message.
 	static _closeAllPopouts = (message) => {
-		console.log(message);
 		for(let value of Object.values(message.apps)){
-			console.log(value);
 			if(value?.popOut && value?.rendered) value?.close();
 		}
 	}

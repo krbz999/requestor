@@ -1,5 +1,5 @@
 # Z's Requestor
-A GM can use the built-in methods to create item cards with buttons for players (or the GM) to click.
+A GM can use the built-in methods to create chat cards with buttons for players (or the GM) to click.
 
 The main method is `Requestor.request({})`, whose inner object requires at least an array of objects `buttonData`. Example (for `dnd5e`):
 
@@ -22,21 +22,16 @@ which will display a message with a button that anyone can click and be prompted
 
 ## How to use:
 Create the following constants, all of which are optional:
-* `img`; the image to use in the card (defaults to a core FA icon).
-* `title`; the title to use in the card (defaults to 'Requestor').
-* `description`; the text description in the card (defaults to an empty string).
-* `footer`; an array of strings to be displayed beneath the buttons of the card (defaults to empty).
-* `whisper`; an array of user ids that the message will be shown to (defaults to all users).
-* `sound`; a sound to play when the message is created (defaults to no sound).
-* `speaker`; standard speaker object (defaults to user).
-* `buttonData`; an array of objects, detailed below.
-* `context`; an object used to pop out the message for all users; use `popout: true` to create a popout, and `autoClose: true` to close the popout after any click on a button. Other values include `scale` (default 1.5), `left` (default `screen.width/3`), and `top` (default 100).
-* `limit`; the limit of the buttons that do not have their own set limit. The values are `Requestor.CONST.LIMIT.FREE` (for buttons that can be clicked as much as a user would want), `.ONCE` (for a button that can be clicked only once), and `.OPTION` (for buttons that can be clicked only once, and also disables all other buttons on the card set to `.OPTION`).
-
-Then run the following function:
-```js
-await Requestor.request({img, title, description, footer, whisper, sound, speaker, buttonData, context, limit});
-```
+* img; the image to use in the card (defaults to a core FA icon).
+* title; the title to use in the card (defaults to 'Requestor').
+* description; the text description in the card (defaults to an empty string).
+* footer; an array of strings to be displayed beneath the buttons of the card (defaults to empty).
+* whisper; an array of user ids that the message will be shown to (defaults to all users).
+* sound; a sound to play when the message is created (defaults to no sound).
+* speaker; standard speaker object (defaults to user).
+* buttonData; an array of objects, detailed below.
+* context; an object used to pop out the message for all users; use `popout: true` to create a popout, and `autoClose: true` to close the popout after any click on a button. Other values include `scale` (default 1.5), `left` (default `screen.width/3`), and `top` (default 100).
+* limit; the limt of the buttons that do not have their own set limit. The values are `Requestor.CONST.LIMIT.FREE` (for buttons that can be clicked as much as a user would want), `.ONCE` (for a button that can be clicked only once), and `.OPTION` (for buttons that can be clicked only once, and also disables all other buttons on the card set to `.OPTION`).
 
 ### buttonData array
 The `buttonData` array is an array of objects detailing the buttons that go on the card. Each object should have an `action` (an arrow function) and a `label` (a string). Any special parameters that should be used in the function but are unavailable due to scope can be passed in the object as well and referenced with prefixing `args.`.
@@ -49,11 +44,10 @@ const actorName = actor.name;
 
 const buttonData = [{
   action: async () => {
-    await ChatMessage.create({content: `${game.user.name} clicked a button made by ${args.userName}.`});
+    await ChatMessage.create({content: `${args.actorName} clicked a button.`});
   },
   label: "Create a message",
-  limit: Requestor.CONST.LIMIT.ONCE,
-  userName: "Steve"
+  actorName
 }];
 ```
 
