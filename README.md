@@ -22,7 +22,7 @@ which will display a message with a button that anyone can click and be prompted
 
 ## How to use:
 Create the following constants, all of which are optional:
-* `img`; the image to use in the card (defaults to a core FA icon).
+* `img`; the image to use in the card (defaults to `icons/containers/boxes/box-gift-green.webp`).
 * `title`; the title to use in the card (defaults to 'Requestor').
 * `description`; the text description in the card (defaults to an empty string).
 * `footer`; an array of strings to be displayed beneath the buttons of the card (defaults to empty).
