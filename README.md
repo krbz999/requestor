@@ -4,7 +4,7 @@ A GM can use the built-in methods to create chat cards with buttons for players 
 The main method is `Requestor.request({})`, whose inner object requires at least an array of objects `buttonData`. Example (for `dnd5e`):
 
 ```js
-Requestor.request({
+await Requestor.request({
   whisper: [],
   description: "This is a request.",
   img: "icons/containers/boxes/box-gift-green.webp",
@@ -30,12 +30,16 @@ Create the following constants, all of which are optional:
 * `sound`; a sound to play when the message is created (defaults to no sound).
 * `speaker`; standard speaker object (defaults to user).
 * `buttonData`; an array of objects, detailed below.
-* `context`; an object used to pop out the message for all users; use `popout: true` to create a popout, and `autoClose: true` to close the popout after any click on a button. Other values include `scale` (default 1.5), `left` (default `screen.width/3`), and `top` (default 100).
-* `limit`; the limit of the buttons that do not have their own set limit. The values are `Requestor.CONST.LIMIT.FREE` (for buttons that can be clicked as much as a user would want), `.ONCE` (for a button that can be clicked only once), and `.OPTION` (for buttons that can be clicked only once, and also disables all other buttons on the card set to `.OPTION`).
+* `context`; an object used to pop out the message for all users; use `popout: true` to create a popout, and `autoClose: true` to close the popout after any click on a button. Other values include `scale` (default 1.25), `left` (default middle of the window), and `top` (default 100).
+* `limit`; the limit of the buttons that do not have their own set limit. The values are `Requestor.LIMIT.FREE` (for buttons that can be clicked as much as a user would want), `.ONCE` (for a button that can be clicked only once), and `.OPTION` (for buttons that can be clicked only once, and also disables all other buttons on the card set to `.OPTION`).
 
 Then run the following function:
 ```js
-await Requestor.request({img, title, description, footer, whisper, sound, speaker, buttonData, context, limit});
+await Requestor.request({
+  img, title, description,
+  footer, whisper, sound,
+  speaker, buttonData, context, limit
+});
 ```
 
 ### buttonData array
@@ -45,17 +49,28 @@ Example:
 
 ```js
 
-const actorName = actor.name;
-
 const buttonData = [{
   action: async () => {
-    await ChatMessage.create({content: `${game.user.name} clicked a button made by ${args.userName}.`});
+    await ChatMessage.create({content: `${game.user.name} clicked a button made by ${this.userName}.`});
   },
   label: "Create a message",
-  limit: Requestor.CONST.LIMIT.ONCE,
+  limit: Requestor.LIMIT.ONCE,
   userName: "Steve"
 }];
 ```
+
+You can add some flair to the chat card by creating faux 'buttons' by passing one of these two types:
+```js
+
+const buttonData: [{
+  type: Requestor.TYPE.DIV
+},{
+  type: Requestor.TYPE.TEXT,
+  label: "Some descriptive text."
+}];
+```
+These will be interpreted as a rule or descriptive text between the buttons. Good for grouping optional buttons together or adding a description beyond the base description passed to the card.
+
 
 ## Helper functions
 
@@ -75,11 +90,7 @@ Methods specific to `dnd5e`:
 Passing an array of user ids as `whisper` in the object of the `request` will whisper the request to those clients only. If none are passed (or by passing an empty array), the request appears for all.
 
 ## Compatibility
-As of v1.1.0, Requestor is system-agnostic.
-
-* `dnd5e`: Unknown compatibility with `Better Rolls`; `Midi-QoL` and `Minimal Rolling Enhancements` have no issues.
-* `pf2e`: Confirmed to work.
-* `nova`: Confirmed to work.
+As of v1.1.0, Requestor is system-agnostic and has been confirmed to work in these systems with no issues: D&D5e, Mausritter, PF2e, Nova, Simple Worldbuilding. No known issues with other systems at this time.
 
 ## Examples
 <details><summary>Muffins! (dnd5e)</summary>
