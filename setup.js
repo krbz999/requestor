@@ -4,6 +4,6 @@ import { api } from "./scripts/api.mjs";
 
 Hooks.once("init", () => {
 	console.log(`${CONSTS.MODULE_TITLE_SHORT} | Initializing ${CONSTS.MODULE_TITLE}`);
-    registerSettings();
+	registerSettings();
 	api.register();
 });
