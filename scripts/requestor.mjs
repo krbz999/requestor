@@ -3,25 +3,31 @@ import { CONSTS } from "./const.mjs";
 export class REQUESTOR {
 	
 	// create chat card.
-	static _createCard = async (args = {}) => {
+	static _createCard = async (gargs = {}) => {
 		
-		const {GM_ONLY, TRUST_MODE, USE_SYSTEM_CLASS} = CONSTS.SETTING_NAMES;
-		const {MODULE_NAME, MODULE_ICON, MODULE_SPEAKER} = CONSTS;
+		const args = expandObject(gargs);
 		
 		// bail out if user is not allowed to make requests.
-		const trustMode = game.settings.get(MODULE_NAME, TRUST_MODE);
-		if(trustMode === GM_ONLY && !game.user.isGM) return console.log("Only the GM is allowed to request.");
+		const trustMode = game.settings.get(CONSTS.MODULE_NAME, CONSTS.SETTING_NAMES.TRUST_MODE);
+		if(trustMode === CONSTS.SETTING_NAMES.GM_ONLY && !game.user.isGM) return console.log("Only the GM is allowed to request.");
 		
 		// create button data.
-		const buttonHTML = args.buttonData?.reduce((acc, {label, action}, i) => {
-			if(!action) return acc;
-			const buttonLabel = label ?? "Click me!";
-			return acc + `<button id="${MODULE_NAME}" data-index="${i}">${buttonLabel}</button>`;
+		const buttonHTML = args.buttonData?.reduce((acc, {action, label, type}, i) => {
+			if(type === CONSTS.TYPE.TEXT){
+				return acc + `<p>${label}</p>`;
+			}
+			else if(type === CONSTS.TYPE.DIV){
+				return acc + "<hr>";
+			}else{
+				if(!action) return acc;
+				
+				const buttonLabel = label ?? "Click me!";
+				return acc + `<button id="${CONSTS.MODULE_NAME}" data-index="${i}">${buttonLabel}</button>`;
+			}
 		}, ``) ?? "";
-			
 		
-		const img = args.img ?? MODULE_ICON;
-		const title = args.title ?? MODULE_SPEAKER;
+		const img = args.img ?? CONSTS.MODULE_ICON;
+		const title = args.title ?? CONSTS.MODULE_SPEAKER;
 		const description = args.description ?? "";
 		const footer = args.footer?.reduce((acc, e) => acc += `<span>${e}</span>`, ``) ?? "";
 		const whisper = args.whisper?.length > 0 ? args.whisper : [];
@@ -30,56 +36,54 @@ export class REQUESTOR {
 		
 		// define chat card class.
 		const systemName = game.system.data.name;
-		const useSystemClass = !!game.settings.get(MODULE_NAME, USE_SYSTEM_CLASS);
-		const divClass = useSystemClass ? systemName : MODULE_NAME;
+		const useSystemClass = !!game.settings.get(CONSTS.MODULE_NAME, CONSTS.SETTING_NAMES.USE_SYSTEM_CLASS);
+		const divClass = useSystemClass ? systemName : CONSTS.MODULE_NAME;
+		
+		// construct the header contents, depending on whether an image should be included.
+		const excludeDefault = !!game.settings.get(CONSTS.MODULE_NAME, CONSTS.SETTING_NAMES.EXCLUDE_IMAGE);
+		const excludeImage = (args.img === CONSTS.STYLE.NO_IMG) || (!args.img && excludeDefault);
+		let header = "";
+		if(excludeImage) header = `<h3 class="item-name" style="text-align:center">${title}</h3>`;
+		else header = `<img src="${img}" title="${title}" width="36" height="36"/> <h3 class="item-name">${title}</h3>`;
 		
 		// construct message data object.
-		const messageData = {
-			speaker,
-			user: game.user.id,
-			whisper,
-			sound,
-			content: `
-				<div class="${divClass} chat-card">
-					<header class="card-header flexrow">
-						<img src="${img}" title="${title}" width="36" height="36"/>
-						<h3 class="item-name">${title}</h3>
-					</header>
-					<div class="card-content">
-						${description}
-					</div>
-					<div class="card-buttons">
-						${buttonHTML}
-					</div>
-					<footer class="card-footer">
-						${footer}
-					</footer>
-				</div>`
+		const messageData = {speaker, whisper, sound, user: game.user.id, content: `
+			<div class="${divClass} chat-card">
+				<header class="card-header flexrow"> ${header} </header>
+				<div class="card-content"> ${description} </div>
+				<div class="card-buttons"> ${buttonHTML} </div>
+				<footer class="card-footer"> ${footer} </footer>
+			</div>`
 		}
 		
 		// construct message flags.
-		messageData[`flags.${MODULE_NAME}.args`] = args;
+		messageData[`flags.${CONSTS.MODULE_NAME}.args`] = args;
 		messageData["flags.core.canPopout"] = true;
 		
 		for(let btnData of args.buttonData ?? []){
-			btnData.action = "" + btnData.action;
-			// use button's limit if defined, else card's limit if defined, else free.
-			btnData.limit = btnData.limit !== undefined ? btnData.limit : (args.limit !== undefined) ? args.limit : CONSTS.LIMIT.FREE;
+			if(typeof btnData === "string") continue;
+			else{
+				// if action is defined, turn it into a string, escaping appropriate characters.
+				if(!!btnData.action) btnData.action = "" + btnData.action;
+				
+				// use button's limit if defined, else card's limit if defined, else free.
+				if(btnData.limit !== undefined) continue;
+				else if(args.limit !== undefined) btnData.limit = args.limit;
+				else btnData.limit = CONSTS.LIMIT.FREE;
+			}
 		}
 		
 		// add context object.
-		const context = args.context ? {[MODULE_NAME]: args.context} : {};
+		const context = args.context ? {[CONSTS.MODULE_NAME]: args.context} : {};
 		
 		return ChatMessage.create(messageData, context);
 	}
 	
+	// add event listener to chat log.
 	static _onClickButton = (_chatLog, html) => {
 		html[0].addEventListener("click", async (event) => {
-			
-			const {LIMIT, MODULE_NAME, MESSAGE_IDS, CLICKED, CLICKED_OPTION} = CONSTS;
-			
 			// make sure it's a Requestor button.
-			const button = event.target?.closest(`button[id="${MODULE_NAME}"]`);
+			const button = event.target?.closest(`button[id="${CONSTS.MODULE_NAME}"]`);
 			if(!button) return;
 			
 			// get the button index (starting at 0).
@@ -92,25 +96,25 @@ export class REQUESTOR {
 			const message = game.messages.get(messageId);
 			
 			// get whether the user has clicked this button already.
-			const clickedButton = !!game.user.getFlag(MODULE_NAME, `${MESSAGE_IDS}.${messageId}.${buttonIndex}.${CLICKED}`);
+			const clickedButton = !!game.user.getFlag(CONSTS.MODULE_NAME, `messageIds.${messageId}.${buttonIndex}.clicked`);
 			
 			// get whether the user has clicked an OPTION button on this card already.
-			const clickedCardOption = !!game.user.getFlag(MODULE_NAME, `${MESSAGE_IDS}.${messageId}.${CLICKED_OPTION}`);
+			const clickedCardOption = !!game.user.getFlag(CONSTS.MODULE_NAME, `messageIds.${messageId}.clickedOption`);
 			
 			// get the args.
-			const args = message.getFlag(MODULE_NAME, "args.buttonData")[buttonIndex];
+			const args = message.getFlag(CONSTS.MODULE_NAME, "args.buttonData")[buttonIndex];
+			const thisargs = duplicate(args);
 			
 			// if it is only allowed to be clicked once, and is already clicked, bail out.
-			if((args.limit === LIMIT.ONCE) && clickedButton) return;
+			if((args.limit === CONSTS.LIMIT.ONCE) && clickedButton) return;
 			
 			// if it is one of several options, and an option on this message has already been clicked, bail out.
-			if((args.limit === LIMIT.OPTION) && clickedCardOption) return;
+			if((args.limit === CONSTS.LIMIT.OPTION) && clickedCardOption) return;
 			
 			// bail out if user is not allowed to click this button.
-			const {GM_ONLY, GM_OWN, FREE, TRUST_MODE} = CONSTS.SETTING_NAMES;
-			const trustMode = game.settings.get(MODULE_NAME, TRUST_MODE);
-			if(trustMode === GM_ONLY && !message.user.isGM) return console.log("The GM did not make this request.");
-			if(trustMode === GM_OWN && !(message.user.isGM || message.user === game.user)) return console.log("You are only allowed to click GM's requests or your own.");
+			const trustMode = game.settings.get(CONSTS.MODULE_NAME, CONSTS.SETTING_NAMES.TRUST_MODE);
+			if(trustMode === CONSTS.SETTING_NAMES.GM_ONLY && !message.user.isGM) return console.log("The GM did not make this request.");
+			if(trustMode === CONSTS.SETTING_NAMES.GM_OWN && !(message.user.isGM || message.user === game.user)) return console.log("You are only allowed to click GM's requests or your own.");
 			
 			// turn the card's embedded flag into a function.
 			const body = `(${args.action})();`;
@@ -122,36 +126,39 @@ export class REQUESTOR {
 			let token = canvas.tokens.controlled[0] ?? actor?.token;
 			
 			// if button is unlimited, remove disabled attribute.
-			if(args.limit === LIMIT.FREE) button.removeAttribute("disabled");
+			if(args.limit === CONSTS.LIMIT.FREE) button.removeAttribute("disabled");
 				
 			// if button is limited, flag user as having clicked this button.
-			if(args.limit === LIMIT.ONCE){
-				await game.user.setFlag(MODULE_NAME, `${MESSAGE_IDS}.${messageId}.${buttonIndex}.${CLICKED}`, true);
+			if(args.limit === CONSTS.LIMIT.ONCE){
+				await game.user.setFlag(CONSTS.MODULE_NAME, `messageIds.${messageId}.${buttonIndex}.clicked`, true);
 				await REQUESTOR._setDisabledStateMessageRender(message, [cardHTML]);
 			}
 			
 			// if button is one of several options, flag user as having clicked an option on this card.
-			if(args.limit === LIMIT.OPTION){
-				await game.user.setFlag(MODULE_NAME, `${MESSAGE_IDS}.${messageId}.${CLICKED_OPTION}`, true);
+			if(args.limit === CONSTS.LIMIT.OPTION){
+				await game.user.setFlag(CONSTS.MODULE_NAME, `messageIds.${messageId}.clickedOption`, true);
 				
 				// render the card again to disable other options.
 				await REQUESTOR._setDisabledStateMessageRender(message, [cardHTML]);
 			}
 			
 			// if message context is set to close on button clicks, close all popouts.
-			if(message.getFlag(MODULE_NAME, "args.context.autoClose")) REQUESTOR._closeAllPopouts(message);
+			if(message.getFlag(CONSTS.MODULE_NAME, "args.context.autoClose")) REQUESTOR._closeAllPopouts(message);
+			
+			// remove unwanted fields from thisargs.
+			delete thisargs.limit;
+			delete thisargs.action;
+			delete thisargs.label;
 			
 			// execute the embedded function.
-			await fn.call({}, token, character, actor, event, args);
+			await fn.call(thisargs, token, character, actor, event, thisargs);
 		});
 	}
 	
 	// remove user flags if the message is gone.
 	static _removeDeprecatedFlags = async (_chatLog, html) => {
-		const {MODULE_NAME, MESSAGE_IDS, CLICKED, CLICKED_OPTION, LIMIT} = CONSTS;
-		
 		// get user flags
-		const flags = game.user.getFlag(MODULE_NAME, MESSAGE_IDS);
+		const flags = game.user.getFlag(CONSTS.MODULE_NAME, "messageIds");
 		if(!flags) return;
 		const messageIds = Object.keys(flags);
 		
@@ -160,13 +167,13 @@ export class REQUESTOR {
 		// for each message id, attempt to find the message.
 		for(let id of messageIds){
 			let message = game.messages.get(id);
-			if(!message) updates[`flags.${MODULE_NAME}.${MESSAGE_IDS}.-=${id}`] = null;
+			if(!message) updates[`flags.${CONSTS.MODULE_NAME}.messageIds.-=${id}`] = null;
 		}
 		await game.user.update(updates);
 	}
 	
-	// trigger enable/disable of buttons when a message is rendered.
-	// each message is rendered individually when the chatLog is rendered.
+	/* trigger enable/disable of buttons when a message is rendered.
+	   each message is rendered individually when the chatLog is rendered. */
 	static _setDisabledStateMessageRender = async (chatMessage, html) => {
 		
 		const messageHTML = html[0];
@@ -178,8 +185,6 @@ export class REQUESTOR {
 	
 	// set enabled state of buttons depending on user flags.
 	static _setDisabledState = async (html, doc, id) => {
-		const {MODULE_NAME, MESSAGE_IDS, CLICKED, CLICKED_OPTION, LIMIT} = CONSTS;
-		
 		const messageHTML = html;
 		const messageDoc = doc;
 		const messageId = id;
@@ -187,7 +192,7 @@ export class REQUESTOR {
 		if(!messageHTML || !messageDoc) return;
 		
 		// if the message is found, get all of its buttons.
-		let buttons = messageHTML.querySelectorAll(`button#${MODULE_NAME}`);
+		const buttons = messageHTML.querySelectorAll(`button[id="${CONSTS.MODULE_NAME}"]`);
 		
 		// for each button, if the button is limited and clicked, set it to be disabled.
 		// if a button is an option, and the user has clicked an option on this card, set it to be disabled.
@@ -196,25 +201,42 @@ export class REQUESTOR {
 			let buttonIndex = button.getAttribute("data-index");
 			
 			// this flag only exists if a ONCE button has been clicked.
-			if(game.user.getFlag(MODULE_NAME, `${MESSAGE_IDS}.${messageId}.${buttonIndex}.${CLICKED}`)) button.setAttribute("disabled", "");
+			if(game.user.getFlag(CONSTS.MODULE_NAME, `messageIds.${messageId}.${buttonIndex}.clicked`)) button.setAttribute("disabled", "");
 			
 			// if OPTION, and an option has been clicked, disable the button.
-			if(game.user.getFlag(MODULE_NAME, `${MESSAGE_IDS}.${messageId}.${CLICKED_OPTION}`)){
-				if(messageDoc.getFlag(MODULE_NAME, "args.buttonData")?.[buttonIndex]?.limit === LIMIT.OPTION) button.setAttribute("disabled", "");
+			const user_has_clicked_option = game.user.getFlag(CONSTS.MODULE_NAME, `messageIds.${messageId}.clickedOption`);
+			const message_buttonData_array = messageDoc.getFlag(CONSTS.MODULE_NAME, "args.buttonData");
+			if(user_has_clicked_option && !!message_buttonData_array.length){
+				let {limit} = message_buttonData_array[buttonIndex];
+				if(limit === CONSTS.LIMIT.OPTION){
+					button.setAttribute("disabled", "");
+				}
 			}
 		}
 	}
 	
 	// create popout if such context is provided.
-	static _popoutFocusMessage = (message, context) => {
-		const {MODULE_NAME} = CONSTS;
-		if(!!context[MODULE_NAME]?.popout){
-			new ChatPopout(message, {
-				scale: context[MODULE_NAME].scale ?? 1.5,
-				left: context[MODULE_NAME].left ?? screen.width/3,
-				top: context[MODULE_NAME].top ?? 100
-			}).render(true);
+	static _popoutFocusMessage = (message, context, userId) => {
+		// is popout set true.
+		const should_popout = !!getProperty(context, "requestor.popout");
+		if(!should_popout) return;
+		
+		// is it whispered.
+		const whisper = message.data.whisper;
+		if(whisper.length > 0){
+			// if whispered, bail out if you are not a GM, a recipient, or the creator (creator not always included in whisper array).
+			if(!game.user.isGM && !whisper.includes(game.user.id) && message.data.user !== game.user.id) return;
 		}
+		
+		// passed values, with defaults.
+		const {
+			scale = 1.25,
+			left = (window.innerWidth - Dialog.defaultOptions.width)/2,
+			top = 100
+		} = context["requestor"];
+		
+		// create chat popout.
+		new ChatPopout(message, {scale, left, top}).render(true);
 	}
 	
 	// close all popouts of a message.
@@ -224,152 +246,6 @@ export class REQUESTOR {
 		}
 	}
 	
-	static _createCard_SAVE = async ({whisper = [], ability = "int", dc = 10, limit = CONSTS.LIMIT.FREE} = {}) => {
-		const buttonData = [{
-			action: async () => {
-				await actor.rollAbilitySave(args.ability, {event});
-			},
-			label: `Saving Throw DC ${dc} ${CONFIG.DND5E.abilities[ability]}`,
-			ability
-		}];
-		return REQUESTOR._createCard({
-			whisper: whisper?.length ? whisper : [],
-			buttonData,
-			limit
-		});
-	}
-	
-	static _createCard_CHECK = async ({whisper = [], ability = "int", limit = CONSTS.LIMIT.FREE} = {}) => {
-		const buttonData = [{
-			action: async () => {
-				await actor.rollAbilityTest(args.ability, {event});
-			},
-			label: `${CONFIG.DND5E.abilities[ability]} Ability Check`,
-			ability
-		}];
-		return REQUESTOR._createCard({
-			whisper: whisper?.length ? whisper : [],
-			buttonData,
-			limit
-		});
-	}
-	
-	static _createCard_SKILL = async ({whisper = [], skill = "nat", limit = CONSTS.LIMIT.FREE} = {}) => {
-		const buttonData = [{
-			action: async () => {
-				await actor.rollSkill(args.skill, {event});
-			},
-			label: `${CONFIG.DND5E.skills[skill]} Skill Check`,
-			skill
-		}];
-		return REQUESTOR._createCard({
-			whisper: whisper?.length ? whisper : [],
-			buttonData,
-			limit
-		});
-	}
-	
-	static _createCard_ROLL = async ({whisper = [], itemName = "", limit = CONSTS.LIMIT.FREE} = {}) => {
-		if(!itemName) return;
-		const buttonData = [{
-			action: async () => {
-				await actor.items.getName(args.itemName)?.roll();
-			},
-			label: `Use ${itemName}`,
-			itemName
-		}];
-		return REQUESTOR._createCard({
-			whisper: whisper?.length ? whisper : [],
-			buttonData,
-			limit
-		});
-	}
-	
-	static _createCard_GRANT = async ({whisper = [], itemData = [], limit = CONSTS.LIMIT.FREE} = {}) => {
-		const itemDataArray = itemData instanceof Array ? itemData : [itemData];
-		const labelFix = itemDataArray?.length > 1 ? "Items" : itemDataArray[0].name;
-		const buttonData = [{
-			action: async () => {
-				await actor.createEmbeddedDocuments("Item", args.itemDataArray);
-			},
-			itemDataArray,
-			label: `Claim ${labelFix}`
-		}];
-		return REQUESTOR._createCard({
-			whisper: whisper?.length ? whisper : [],
-			buttonData,
-			limit
-		});
-	}
-	
-	static _createCard_DICE = async ({whisper = [], expression = "0", flavor = "", limit = CONSTS.LIMIT.FREE} = {}) => {
-		const buttonData = [{
-			action: async () => {
-				await new Roll(args.expression, actor?.getRollData()).toMessage({
-					speaker: ChatMessage.getSpeaker({actor}),
-					flavor: args.flavor
-				});
-			},
-			label: `Roll Dice`,
-			expression,
-			flavor
-		}];
-		return REQUESTOR._createCard({
-			whisper: whisper?.length ? whisper : [],
-			buttonData,
-			limit
-		});
-	}
-	
-	static _createCard_TEMPLATE = async ({whisper = [], templateData, limit = CONSTS.LIMIT.FREE} = {}) => {
-		const template_data = templateData ?? {
-			t: "circle",
-			x: canvas.app.renderer.plugins.interaction.mouse.getLocalPosition(canvas.app.stage).x,
-			y: canvas.app.renderer.plugins.interaction.mouse.getLocalPosition(canvas.app.stage).y,
-			distance: 20,
-			direction: 0,
-			angle: 0,
-			width: 1
-		}
-		const buttonData = [{
-			label: "Place Template",
-			action: () => {
-				const template_data = args.template_data;
-				template_data.user = game.user.id;
-				const doc = new CONFIG.MeasuredTemplate.documentClass(template_data, {parent: canvas.scene});
-				const template = new game.dnd5e.canvas.AbilityTemplate(doc);
-				template.drawPreview();
-			},
-			template_data
-		}];
-		return REQUESTOR._createCard({
-			whisper: whisper?.length ? whisper : [],
-			buttonData,
-			limit
-		});
-	}
-	
-	static _createCard_MUFFIN = async () => {
-		const itemData = {
-			name: "Free Muffin",
-			type: "consumable",
-			img: CONSTS.MODULE_ICON,
-			data: {
-				description: {value: "<p>It's a free muffin!</p>"},
-				weight: 0.1,
-				price: 50,
-				rarity: "common",
-				activation: {type: "action", cost: 1},
-				range: {units: "self"},
-				target: {type: "self"},
-				uses: {value: 1, max: "1", per: "charges", autoDestroy: true},
-				actionType: "heal",
-				damage: {parts: [["1d10", "healing"]]},
-				consumableType: "food"
-			}
-		}
-		return REQUESTOR._createCard_GRANT({itemData, limit: CONSTS.LIMIT.ONCE});
-	}
 }
 
 Hooks.on("renderChatLog", REQUESTOR._onClickButton);

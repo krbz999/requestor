@@ -24,6 +24,10 @@
 	color: #4b4a44;
 }
 
+.requestor.chat-card .card-header h3:hover {
+	text-shadow: 0 0 8px var(--color-shadow-primary)!important;
+}
+
 .requestor.chat-card .card-content {
 	margin: 5px 0;
 	//style: block;
@@ -72,4 +76,8 @@
 .requestor.chat-card .card-footer span:last-child {
 	border-right: none;
 	padding-right: 0;
+}
+
+.requestor.chat-card button label {
+	font-size: 50px;
 }

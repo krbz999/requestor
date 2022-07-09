@@ -1,6 +1,8 @@
 {
 	"REQUESTOR.Setting.UseSystemClass.Name": "Use System Cards (experimental)",
 	"REQUESTOR.Setting.UseSystemClass.Hint": "Attempt to use the system's UI for Requestor chat cards. This may not work for all systems.",
+	"REQUESTOR.Setting.ExcludeImage.Name": "Exclude Image",
+	"REQUESTOR.Setting.ExcludeImage.Hint": "Exclude the image in chat cards by default unless explicitly provided.",
 	"REQUESTOR.Setting.TrustMode.Name": "Change Permissions",
 	"REQUESTOR.Setting.TrustMode.Hint": "DO NOT CHANGE THIS SETTING IF YOU DO NOT FULLY TRUST YOUR PLAYERS. This changes the permissions for who can make and accept requests. (1) GM ONLY: Only the GM can make requests, and players can only click buttons made by a GM. (2) GM and OWN: Anyone can make requests, and players can only click buttons made by a GM or themselves. (3) FREE: Anyone can make requests, and anyone can click any buttons.",
 	"REQUESTOR.Setting.TrustMode.Choice1": "[GM ONLY] - Request: GM only. Accept: Only if GM requested",

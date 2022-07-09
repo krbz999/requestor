@@ -5,11 +5,20 @@ export function registerSettings(){
 }
 
 function _registerSettings(){
-	const {TRUST_MODE, GM_ONLY, GM_OWN, FREE, USE_SYSTEM_CLASS} = CONSTS.SETTING_NAMES;
+	const {TRUST_MODE, GM_ONLY, GM_OWN, FREE, USE_SYSTEM_CLASS, EXCLUDE_IMAGE} = CONSTS.SETTING_NAMES;
 	
 	game.settings.register(CONSTS.MODULE_NAME, USE_SYSTEM_CLASS, {
 		name: game.i18n.localize("REQUESTOR.Setting.UseSystemClass.Name"),
 		hint: game.i18n.localize("REQUESTOR.Setting.UseSystemClass.Hint"),
+		scope: "world",
+		config: true,
+		type: Boolean,
+		default: false
+	});
+	
+	game.settings.register(CONSTS.MODULE_NAME, EXCLUDE_IMAGE, {
+		name: game.i18n.localize("REQUESTOR.Setting.ExcludeImage.Name"),
+		hint: game.i18n.localize("REQUESTOR.Setting.ExcludeImage.Hint"),
 		scope: "world",
 		config: true,
 		type: Boolean,
