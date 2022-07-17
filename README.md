@@ -1,4 +1,4 @@
-# Z's Requestor
+# Requestor
 A GM can use the built-in methods to create chat cards with buttons for players (or the GM) to click.
 
 The main method is `Requestor.request({})`, whose inner object requires at least an array of objects `buttonData`. Example (for `dnd5e`):
