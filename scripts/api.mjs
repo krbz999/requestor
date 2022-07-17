@@ -7,7 +7,7 @@ export class api {
 	static register(){
 		api.globals();
 		
-		if(game.system.data.name === "dnd5e") api.globalsDND5E();
+		if(game.system.id === "dnd5e") api.globalsDND5E();
 	}
 	
 	static globals(){
