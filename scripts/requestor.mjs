@@ -35,7 +35,7 @@ export class REQUESTOR {
 		const speaker = args.speaker ?? ChatMessage.getSpeaker();
 		
 		// define chat card class.
-		const systemName = game.system.data.name;
+		const systemName = game.system.id;
 		const useSystemClass = !!game.settings.get(CONSTS.MODULE_NAME, CONSTS.SETTING_NAMES.USE_SYSTEM_CLASS);
 		const divClass = useSystemClass ? systemName : CONSTS.MODULE_NAME;
 		
@@ -247,11 +247,3 @@ export class REQUESTOR {
 	}
 	
 }
-
-Hooks.on("renderChatLog", REQUESTOR._onClickButton);
-Hooks.on("renderChatPopout", REQUESTOR._onClickButton);
-
-Hooks.on("renderChatMessage", REQUESTOR._setDisabledStateMessageRender);
-Hooks.on("renderChatLog", REQUESTOR._removeDeprecatedFlags);
-
-Hooks.on("createChatMessage", REQUESTOR._popoutFocusMessage);

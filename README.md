@@ -1,5 +1,5 @@
-# Requestor
-This is a system-agnostic module that a GM can use with the built-in methods to create chat cards with buttons for players (or the GM) to click.
+# Z's Requestor
+A GM can use the built-in methods to create chat cards with buttons for players (or the GM) to click.
 
 The main method is `Requestor.request({})`, whose inner object requires at least an array of objects `buttonData`. Example (for `dnd5e`):
 
@@ -17,7 +17,9 @@ await Requestor.request({
 });
 ```
 
-![example1](https://user-images.githubusercontent.com/50169243/173181059-698b4d65-9257-482d-a18a-34c34c9e16a1.png)
+<p style="center">
+	<img src="https://user-images.githubusercontent.com/50169243/173181059-698b4d65-9257-482d-a18a-34c34c9e16a1.png"/>
+</p>
 
 which will display a message with a button that anyone can click and be prompted to roll Nature. The `buttonData` array can take an arbitrary number of objects.
 
@@ -88,6 +90,9 @@ Methods specific to `dnd5e`:
 * `Requestor.dnd5e.grantMuffin`: a request for an actor to be granted a muffin which restores 1d10 hit points when consumed.
 
 Passing an array of user ids as `whisper` in the object of the `request` will whisper the request to those clients only. If none are passed (or by passing an empty array), the request appears for all.
+
+## Compatibility
+As of v1.1.0, Requestor is system-agnostic and has been confirmed to work in these systems with no issues: D&D5e, Mausritter, PF2e, Nova, Simple Worldbuilding. No known issues with other systems at this time.
 
 ## Examples
 <details><summary>Muffins! (dnd5e)</summary>
@@ -166,6 +171,9 @@ await Requestor.request({
   ]
 });
 ```
-![image](https://user-images.githubusercontent.com/50169243/173451017-dcb23d05-d45a-4316-bec7-e6e09724beb3.png)
+
+<p style="center">
+	<img src="https://user-images.githubusercontent.com/50169243/173451017-dcb23d05-d45a-4316-bec7-e6e09724beb3.png"/>
+</p>
 
 </details>

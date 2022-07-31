@@ -133,7 +133,7 @@ export class DEMOS {
 			name: "Free Muffin",
 			type: "consumable",
 			img: CONSTS.MODULE_ICON,
-			data: {
+			system: {
 				description: {value: "<p>It's a free muffin!</p>"},
 				weight: 0.1, price: 50, rarity: "common",
 				activation: {type: "action", cost: 1},
@@ -145,6 +145,6 @@ export class DEMOS {
 				consumableType: "food"
 			}
 		}
-		return REQUESTOR._createCard_GRANT({itemData, limit: CONSTS.LIMIT.ONCE});
+		return DEMOS._createCard_GRANT({itemData, limit: CONSTS.LIMIT.ONCE});
 	}
 }

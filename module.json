@@ -12,8 +12,7 @@
 		"minimum": "10"
 	},
 	"esmodules": [
-		"./setup.js",
-		"./scripts/requestor.mjs"
+		"./setup.js"
 	],
 	"styles": [
 		"./scripts/styles.css"
