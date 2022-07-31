@@ -1,5 +1,5 @@
-# Z's Requestor
-A GM can use the built-in methods to create chat cards with buttons for players (or the GM) to click.
+# Requestor
+This is a system-agnostic module that a GM can use with the built-in methods to create chat cards with buttons for players (or the GM) to click.
 
 The main method is `Requestor.request({})`, whose inner object requires at least an array of objects `buttonData`. Example (for `dnd5e`):
 
@@ -90,9 +90,6 @@ Methods specific to `dnd5e`:
 * `Requestor.dnd5e.grantMuffin`: a request for an actor to be granted a muffin which restores 1d10 hit points when consumed.
 
 Passing an array of user ids as `whisper` in the object of the `request` will whisper the request to those clients only. If none are passed (or by passing an empty array), the request appears for all.
-
-## Compatibility
-As of v1.1.0, Requestor is system-agnostic and has been confirmed to work in these systems with no issues: D&D5e, Mausritter, PF2e, Nova, Simple Worldbuilding. No known issues with other systems at this time.
 
 ## Examples
 <details><summary>Muffins! (dnd5e)</summary>
