@@ -25,7 +25,7 @@ which will display a message with a button that anyone can click and be prompted
 
 ## How to use:
 Create the following constants, all of which are optional:
-* `img`; the image to use in the card (defaults to `icons/containers/boxes/box-gift-green.webp`).
+* `img`; the image to use in the card (defaults to `icons/containers/boxes/box-gift-green.webp`). Set this to `Requestor.STYLE.NO_IMG` to not display one at all.
 * `title`; the title to use in the card (defaults to 'Requestor').
 * `description`; the text description in the card (defaults to an empty string).
 * `footer`; an array of strings to be displayed beneath the buttons of the card (defaults to empty).
@@ -46,7 +46,7 @@ await Requestor.request({
 ```
 
 ### buttonData array
-The `buttonData` array is an array of objects detailing the buttons that go on the card. Each object should have an `action` (an arrow function) and a `label` (a string). Any special parameters that should be used in the function but are unavailable due to scope can be passed in the object as well and referenced with prefixing `args.`.
+The `buttonData` array is an array of objects detailing the buttons that go on the card. Each object should have an `action` (an arrow function) and a `label` (a string). Any special parameters that should be used in the function but are unavailable due to scope can be passed in the object as well and referenced with prefixing `this.`.
 
 Example:
 
@@ -72,7 +72,10 @@ const buttonData: [{
 }];
 ```
 These will be interpreted as a rule or descriptive text between the buttons. Good for grouping optional buttons together or adding a description beyond the base description passed to the card.
-
+The full list of keys to pass to a 'button' include:
+* `LIMIT`: `FREE`, `ONCE`, `OPTION` (for an entry that can clicked any number of times, only once, or once between a group of options). Default: `FREE`.
+* `TYPE`: `BUTTON`, `DIV`, `TEXT` (for a button, a divider, or a short description). Default: `BUTTON`.
+* `PERMISSION`: `GM`, `PLAYER`, `ALL` (for an entry that will only be shown for GMs, only for players, or for all). Default: `ALL`.
 
 ## Helper functions
 

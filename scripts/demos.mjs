@@ -1,4 +1,4 @@
-import { CONSTS } from "./const.mjs";
+import { CONSTANTS } from "./const.mjs";
 import { REQUESTOR } from "./requestor.mjs";
 
 export class DEMOS {
@@ -132,7 +132,7 @@ export class DEMOS {
 		const itemData = {
 			name: "Free Muffin",
 			type: "consumable",
-			img: CONSTS.MODULE_ICON,
+			img: CONSTANTS.MODULE_ICON,
 			system: {
 				description: {value: "<p>It's a free muffin!</p>"},
 				weight: 0.1, price: 50, rarity: "common",
@@ -145,6 +145,6 @@ export class DEMOS {
 				consumableType: "food"
 			}
 		}
-		return DEMOS._createCard_GRANT({itemData, limit: CONSTS.LIMIT.ONCE});
+		return DEMOS._createCard_GRANT({itemData, limit: CONSTANTS.LIMIT.ONCE});
 	}
 }

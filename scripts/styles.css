@@ -1,3 +1,15 @@
+/* Display style for users. */
+body :root {
+    --requestor-display-player: block;
+	--requestor-display-gm: block;
+}
+.requestor-gm-only {
+	display: var(--requestor-display-gm) !important;
+}
+.requestor-player-only {
+	display: var(--requestor-display-player) !important;
+}
+
 .requestor.chat-card {
 	font-style: normal;
 	font-size: 12px;
@@ -5,8 +17,8 @@
 
 .requestor.chat-card .card-header {
 	padding: 3px 0;
-	border-top: 2px groove #FFF;
-	border-bottom: 2px groove #FFF;
+	border-top: 2px groove #ffffff;
+	border-bottom: 2px groove #ffffff;
 }
 
 .requestor.chat-card .card-header img {
@@ -22,6 +34,7 @@
 	font-size: 20px;
 	font-weight: 700;
 	color: #4b4a44;
+	border: 0;
 }
 
 .requestor.chat-card .card-header h3:hover {
@@ -30,7 +43,6 @@
 
 .requestor.chat-card .card-content {
 	margin: 5px 0;
-	//style: block;
 	font-size: 12px;
 }
 

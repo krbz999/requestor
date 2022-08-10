@@ -1,13 +1,13 @@
-import { CONSTS } from "./const.mjs";
+import { CONSTANTS } from "./const.mjs";
 
 export function registerSettings(){
 	_registerSettings();
 }
 
 function _registerSettings(){
-	const {TRUST_MODE, GM_ONLY, GM_OWN, FREE, USE_SYSTEM_CLASS, EXCLUDE_IMAGE} = CONSTS.SETTING_NAMES;
+	const {TRUST_MODE, GM_ONLY, GM_OWN, FREE, USE_SYSTEM_CLASS, EXCLUDE_IMAGE} = CONSTANTS.SETTING_NAMES;
 	
-	game.settings.register(CONSTS.MODULE_NAME, USE_SYSTEM_CLASS, {
+	game.settings.register(CONSTANTS.MODULE_NAME, USE_SYSTEM_CLASS, {
 		name: game.i18n.localize("REQUESTOR.Setting.UseSystemClass.Name"),
 		hint: game.i18n.localize("REQUESTOR.Setting.UseSystemClass.Hint"),
 		scope: "world",
@@ -16,7 +16,7 @@ function _registerSettings(){
 		default: false
 	});
 	
-	game.settings.register(CONSTS.MODULE_NAME, EXCLUDE_IMAGE, {
+	game.settings.register(CONSTANTS.MODULE_NAME, EXCLUDE_IMAGE, {
 		name: game.i18n.localize("REQUESTOR.Setting.ExcludeImage.Name"),
 		hint: game.i18n.localize("REQUESTOR.Setting.ExcludeImage.Hint"),
 		scope: "world",
@@ -25,7 +25,7 @@ function _registerSettings(){
 		default: false
 	});
 	
-	game.settings.register(CONSTS.MODULE_NAME, TRUST_MODE, {
+	game.settings.register(CONSTANTS.MODULE_NAME, TRUST_MODE, {
 		name: game.i18n.localize("REQUESTOR.Setting.TrustMode.Name"),
 		hint: game.i18n.localize("REQUESTOR.Setting.TrustMode.Hint"),
 		scope: "world",

@@ -1,5 +1,5 @@
 import { REQUESTOR } from "./requestor.mjs";
-import { CONSTS } from "./const.mjs";
+import { CONSTANTS } from "./const.mjs";
 import { DEMOS } from "./demos.mjs";
 
 export class api {
@@ -12,9 +12,10 @@ export class api {
 	
 	static globals(){
 		globalThis.Requestor = {
-			LIMIT: CONSTS.LIMIT,
-			STYLE: CONSTS.STYLE,
-			TYPE: CONSTS.TYPE,
+			LIMIT: CONSTANTS.LIMIT,
+			STYLE: CONSTANTS.STYLE,
+			TYPE: CONSTANTS.TYPE,
+			PERMISSION: CONSTANTS.PERMISSION,
 			request: REQUESTOR._createCard,
 			itemGrant: DEMOS._createCard_GRANT,
 			diceRoll: DEMOS._createCard_DICE

@@ -1,5 +1,6 @@
 {
 	"id": "requestor",
+	"name": "requestor",
 	"title": "Requestor",
 	"version": "v2.0.0",
 	"authors": [{
@@ -8,15 +9,10 @@
 		"discord": "Zhell#9201",
 		"ko-fi": "https://ko-fi.com/zhell"
 	}],
-	"compatibility": {
-		"minimum": "10"
-	},
-	"esmodules": [
-		"./setup.js"
-	],
-	"styles": [
-		"./scripts/styles.css"
-	],
+	"minimumCoreVersion": "10",
+	"compatibility": {"minimum": "10"},
+	"esmodules": ["./setup.js"],
+	"styles": ["./scripts/styles.css"],
 	"languages": [{
 		"lang": "en",
 		"name": "English",
