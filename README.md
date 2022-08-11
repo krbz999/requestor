@@ -108,7 +108,7 @@ Requestor.request({
         name: "Muffin",
         type: "consumable",
         img: "icons/containers/boxes/box-gift-green.webp",
-        data: {
+        system: {
           description: {value: "<p>It's a free muffin!</p>"},
           weight: 0.1, price: 50, rarity: "common",
           activation: {type: "action", cost: 1},
