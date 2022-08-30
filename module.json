@@ -1,18 +1,20 @@
 {
 	"id": "requestor",
-	"name": "requestor",
 	"title": "Requestor",
-	"version": "v2.0.0-beta1",
+	"version": "v2.0.0",
 	"authors": [{
 		"name": "Zhell",
 		"url": "https://github.com/krbz999",
 		"discord": "Zhell#9201",
 		"ko-fi": "https://ko-fi.com/zhell"
 	}],
-	"minimumCoreVersion": "10",
 	"compatibility": {"minimum": "10"},
-	"esmodules": ["./setup.js"],
-	"styles": ["./scripts/styles.css"],
+	"esmodules": [
+		"./setup.js"
+	],
+	"styles": [
+		"./templates/styles.css"
+	],
 	"languages": [{
 		"lang": "en",
 		"name": "English",
@@ -22,5 +24,7 @@
 	}],
 	"url": "https://github.com/krbz999/requestor",
 	"manifest": "https://raw.githubusercontent.com/krbz999/requestor/v10/module.json",
-	"download": "https://github.com/krbz999/requestor/releases/download/v2.0.0-beta1/module.zip"
+	"download": "https://github.com/krbz999/requestor/releases/download/v2.0.0/module.zip",
+	"name": "requestor",
+	"minimumCoreVersion": "10"
 }
