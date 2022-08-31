@@ -1,30 +1,28 @@
 {
-	"id": "requestor",
-	"title": "Requestor",
-	"version": "v2.0.0",
-	"authors": [{
+    "name": "requestor",
+    "title": "Z's Requestor",
+    "description": "A GM can use the built-in methods to create chat cards with buttons for players (or the GM) to click.",
+    "system": [],
+    "version": "v1.1.1",
+    "authors": [{
 		"name": "Zhell",
 		"url": "https://github.com/krbz999",
-		"discord": "Zhell#9201",
-		"ko-fi": "https://ko-fi.com/zhell"
+		"discord": "Zhell#9201"
 	}],
-	"compatibility": {"minimum": "10"},
-	"esmodules": [
-		"./setup.js"
+    "minimumCoreVersion": "9",
+    "compatibleCoreVersion": "9",
+    "esmodules": [
+		"./setup.js",
+		"./scripts/requestor.mjs"
 	],
-	"styles": [
-		"./templates/styles.css"
-	],
+	"styles": ["./scripts/styles.css"],
 	"languages": [{
 		"lang": "en",
 		"name": "English",
-		"path": "langs/en.json",
-		"title": "Requestor",
-		"description": "A GM can use the built-in methods to create chat cards with buttons for players (or the GM) to click."
+		"path": "langs/en.json"
 	}],
-	"url": "https://github.com/krbz999/requestor",
-	"manifest": "https://raw.githubusercontent.com/krbz999/requestor/v10/module.json",
-	"download": "https://github.com/krbz999/requestor/releases/download/v2.0.0/module.zip",
-	"name": "requestor",
-	"minimumCoreVersion": "10"
+	"scripts": [],
+    "url": "https://github.com/krbz999/requestor",
+    "manifest": "https://github.com/krbz999/requestor/releases/latest/download/module.json",
+    "download": "https://github.com/krbz999/requestor/releases/latest/download/module.zip"
 }

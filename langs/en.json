@@ -1,25 +1,11 @@
 {
-	"REQUESTOR": {
-		"WARN": {
-			"GM_ONLY": "Aborted: You are only allowed to execute the GM's requests.",
-			"GM_OR_OWN_ONLY": "Aborted: You are only allowed to execute the GM's requests or your own.",
-			"NO_PERMISSION": "Aborted: Only the GM is allowed to make requests."
-		},
-		"SETTINGS": {
-			"EXCLUDE_IMAGE": {
-				"NAME": "Exclude Image",
-				"HINT": "Exclude the image in chat cards by default unless explicitly provided."
-			},
-			"TRUST_MODE": {
-				"NAME": "Module Permissions",
-				"HINT": "DO NOT CHANGE THIS SETTING IF YOU DO NOT FULLY TRUST YOUR PLAYERS. This changes the permissions for who can make and accept requests. (1) GM ONLY: Only the GM can make requests, and players can only click buttons made by a GM. (2) GM and OWN: Anyone can make requests, and players can only click buttons made by a GM or themselves. (3) FREE: Anyone can make requests, and anyone can click any buttons.",
-				"OPTION_1": "[GM ONLY] - Request: GM only. Accept: Only if GM requested",
-				"OPTION_2": "[GM and OWN] - Request: Anyone. Accept: Only if GM or self",
-				"OPTION_3": "[FREE] - Request: Anyone. Accept: Anyone"
-			}
-		},
-		"LABELS": {
-			"CLICK_ME": "Click me!"
-		}
-	}
+	"REQUESTOR.Setting.UseSystemClass.Name": "Use System Cards (experimental)",
+	"REQUESTOR.Setting.UseSystemClass.Hint": "Attempt to use the system's UI for Requestor chat cards. This may not work for all systems.",
+	"REQUESTOR.Setting.ExcludeImage.Name": "Exclude Image",
+	"REQUESTOR.Setting.ExcludeImage.Hint": "Exclude the image in chat cards by default unless explicitly provided.",
+	"REQUESTOR.Setting.TrustMode.Name": "Change Permissions",
+	"REQUESTOR.Setting.TrustMode.Hint": "DO NOT CHANGE THIS SETTING IF YOU DO NOT FULLY TRUST YOUR PLAYERS. This changes the permissions for who can make and accept requests. (1) GM ONLY: Only the GM can make requests, and players can only click buttons made by a GM. (2) GM and OWN: Anyone can make requests, and players can only click buttons made by a GM or themselves. (3) FREE: Anyone can make requests, and anyone can click any buttons.",
+	"REQUESTOR.Setting.TrustMode.Choice1": "[GM ONLY] - Request: GM only. Accept: Only if GM requested",
+	"REQUESTOR.Setting.TrustMode.Choice2": "[GM and OWN] - Request: Anyone. Accept: Only if GM or self",
+	"REQUESTOR.Setting.TrustMode.Choice3": "[FREE] - Request: Anyone. Accept: Anyone"
 }
