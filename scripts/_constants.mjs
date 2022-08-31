@@ -1,0 +1,9 @@
+export const MODULE = "requestor";
+export const CARD_TITLE = "Request";
+export const ICON = "icons/containers/boxes/box-gift-green.webp";
+export const LIMIT = {FREE: 0, ONCE: 1, OPTION: 2};
+export const TYPE = {BUTTON: "button", DIV: "<hr>", TEXT: "text"};
+export const PERMISSION = {GM: "gm-only", PLAYER: "player-only", ALL: "all"};
+export const TRUST_MODE = "trustMode";
+export const TRUST_OPTIONS = {GM_ONLY: "gm-only", GM_OWN: "gm-own", FREE: "free"};
+export const EXCLUDE_IMAGE = "excludeImage";
