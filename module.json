@@ -1,8 +1,8 @@
 {
-	"id": "requestor",
-	"title": "Requestor",
-	"version": "v10.0.0",
-	"authors": [
+    "id": "requestor",
+    "title": "Requestor",
+    "version": "v10.0.0",
+    "authors": [
         {
             "name": "Zhell",
             "url": "https://github.com/krbz999",
@@ -16,12 +16,12 @@
         "maximum": "10"
     },
     "esmodules": [
-		"./setup.js"
-	],
-	"styles": [
-		"./templates/styles.css"
-	],
-	"languages": [
+        "./setup.js"
+    ],
+	  "styles": [
+        "./templates/styles.css"
+    ],
+    "languages": [
         {
             "lang": "en",
             "name": "English",
@@ -30,9 +30,9 @@
             "description": "A GM can use the built-in methods to create chat cards with buttons for players (or the GM) to click."
         }
     ],
-	"url": "https://github.com/krbz999/requestor",
-	"manifest": "https://raw.githubusercontent.com/krbz999/requestor/releases/latest/download/module.json",
-	"download": "https://github.com/krbz999/requestor/releases/download/v10.0.0/module.zip",
-	"name": "requestor",
-	"minimumCoreVersion": "10"
+    "url": "https://github.com/krbz999/requestor",
+    "manifest": "https://raw.githubusercontent.com/krbz999/requestor/releases/latest/download/module.json",
+    "download": "https://github.com/krbz999/requestor/releases/download/v10.0.0/module.zip",
+    "name": "requestor",
+    "minimumCoreVersion": "10"
 }
