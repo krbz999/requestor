@@ -16,7 +16,7 @@ await Requestor.request({
 ```
 
 <p style="text-align: center">
-	<img src="https://i.imgur.com/uQgwh4B.png"/>
+    <img src="https://i.imgur.com/uQgwh4B.png"/>
 </p>
 
 which will display a message with a button that anyone can click and be prompted to roll Nature. The `buttonData` array can take an arbitrary number of objects.

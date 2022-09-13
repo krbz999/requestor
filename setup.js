@@ -5,11 +5,11 @@ import { setup_popoutHelpers } from "./scripts/_popoutHelpers.mjs";
 import { setup_settings } from "./scripts/_settings.mjs";
 
 Hooks.once("init", () => {
-	console.log("ZHELL | Initializing Requestor");
-	
-	setup_api();
-	setup_settings();
-	setup_chatListeners();
-	setup_cleanupHelpers();
-	setup_popoutHelpers();
+    console.log("ZHELL | Initializing Requestor");
+    
+    setup_api();
+    setup_settings();
+    setup_chatListeners();
+    setup_cleanupHelpers();
+    setup_popoutHelpers();
 });
