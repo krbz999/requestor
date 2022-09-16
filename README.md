@@ -15,7 +15,7 @@ await Requestor.request({
 });
 ```
 
-<p style="text-align: center">
+<p align="center">
     <img src="https://i.imgur.com/uQgwh4B.png"/>
 </p>
 
@@ -52,20 +52,35 @@ The full list of keys (other than 'label' and 'action') to pass to a button incl
 
 Some helper functions are pre-defined:
 * `Requestor.request`: the base function.
-* `Requestor.diceRoll({formula, flavor})`: a request for a player to roll a set of dice. Takes a formula and optional flavor text (strings).
+* `Requestor.diceRoll({formula, flavor})`: a request for a player to roll a set of dice. Takes a formula and optional flavor text (strings). This example requests users to roll `2d4 + 2` with the flavor text "Healing Potion".
+```js
+await Requestor.diceRoll({formula: "2d4+2", flavor: "Healing Potion"});
+```
 * `Requestor.grantItem({itemData})`: a request for an actor to claim an item or array of items. Requires an array of item data objects.
 
 Methods specific to `dnd5e`:
-* `Requestor.dnd5e.rollAbilitySave({ability, dc})`: a request for a saving throw. Requires a three-letter key for the type of save (string) and the DC (integer).
-* `Requestor.dnd5e.rollAbilityTest({ability})`: a request for an ability check. Requires a three-letter key for the type of ability check (string).
-* `Requestor.dnd5e.rollSkill({skill})`: a request for an ability check using a skill. Requires a three-letter key for the type of skill (string).
-* `Requestor.dnd5e.useItem({itemName})`: a request for an actor to use one of their items. Requires the name of the item (string).
+* `Requestor.dnd5e.rollAbilitySave({ability, dc})`: a request for a saving throw. Requires a three-letter key for the type of save (string) and the DC (integer). This example requests users for a DC 15 Strength saving throw.
+```js
+await Requestor.dnd5e.rollAbilitySave({ability: "str", dc: 15});
+```
+* `Requestor.dnd5e.rollAbilityTest({ability})`: a request for an ability check. Requires a three-letter key for the type of ability check (string). This example requests users for an Intelligence check.
+```js
+await Requestor.dnd5e.rollAbilityTest({ability: "int"});
+```
+* `Requestor.dnd5e.rollSkill({skill})`: a request for an ability check using a skill. Requires a three-letter key for the type of skill (string). This example requests users for a Persuasion check.
+```js
+await Requestor.dnd5e.rollSkill({skill: "per"});
+```
+* `Requestor.dnd5e.useItem({itemName})`: a request for an actor to use one of their items. Requires the name of the item (string). This example requests users to use the item (or spell) they own with the name "Muffin":
+```js
+await Requestor.dnd5e.useItem({itemName: "Muffin"});
+```
 * `Requestor.dnd5e.placeMeasuredTemplate({templateData})`: a request for a player to place a template. Requires template data (object). Do not pass a user to the template data.
 * `Requestor.dnd5e.grantMuffin`: a request for an actor to be granted a muffin which restores 1d10 hit points when consumed.
 
 ## Supplied Variables
 These variables are declared in any scripts:
-* `character`: the assigned character of the user executing the script.
+* `character`: the assigned actor of the user executing the script.
 * `token`: the selected token of the user executing the script, or defaulting to the assigned character's active token on the current scene, if any.
 * `actor`: the actor of the selected token, if any, or defaulting to the assigned character.
 * `scene`: the current scene.
