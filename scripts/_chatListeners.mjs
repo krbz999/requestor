@@ -26,7 +26,7 @@ function onClickButton(chatLog, html){
         // get the args.
         const args = message.getFlag(MODULE, "args.buttonData")[buttonIndex];
         const limit = args.limit;
-        
+
         // if it is only allowed to be clicked once, and is already clicked, bail out.
         const clickedButton = !!game.user.getFlag(MODULE, `messageIds.${messageId}.${buttonIndex}.clicked`);
         if ( ( limit === LIMIT.ONCE ) && clickedButton ) return;
@@ -51,7 +51,7 @@ function onClickButton(chatLog, html){
                 }
             }
         }
-        
+
         // turn the card's embedded flag into a function.
         const body = `(
             ${args.action}

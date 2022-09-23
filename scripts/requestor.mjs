@@ -1,10 +1,14 @@
 import { CARD_TITLE, EXCLUDE_IMAGE, ICON, LIMIT, MODULE, PERMISSION, TRUST_MODE, TRUST_OPTIONS, TYPE } from "./_constants.mjs";
 
 export async function request(config = {}){
+
+    for( const btn of config.buttonData ) {
+        btn.action = btn.action.toString();
+    }
     
     const params = foundry.utils.expandObject(config);
     const templateData = {};
-    
+
     // bail out if user is not allowed to make requests.
     const trustMode = game.settings.get(MODULE, TRUST_MODE);
     if ( trustMode === TRUST_OPTIONS.GM_ONLY && !game.user.isGM ){
