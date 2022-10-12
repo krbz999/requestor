@@ -1,56 +1,75 @@
 /* GM AND PLAYER DISPLAY MODE */
 body :root {
-    --requestor-display-player: block;
-    --requestor-display-gm: block;
+  --requestor-display-player: block;
+  --requestor-display-gm: block;
 }
-.requestor-gm-only { display: var(--requestor-display-gm) !important; }
-.requestor-player-only { display: var(--requestor-display-player) !important; }
+
+.requestor-gm-only {
+  display: var(--requestor-display-gm) !important;
+}
+
+.requestor-player-only {
+  display: var(--requestor-display-player) !important;
+}
 
 /* HEADER */
 .requestor.chat-card .card-header {
-    padding: 3px 0;
-    border-top: 2px groove #ffffff;
-    border-bottom: 2px groove #ffffff;
-}
-.requestor.chat-card .card-header img {
-    margin-right: 5px;
-    flex: 0;
-    height: 36px;
-    width: 36px;
-    border: none;
-}
-.requestor.chat-card .card-header h3.center { text-align: center; }
-.requestor.chat-card .card-header h3 {
-    align-self: center;
-    margin: 0;
-    font-family: "Signika";
-    font-size: 25px;
-    border: 0;
+  padding: 3px 0;
+  border-top: 2px groove #ffffff;
+  border-bottom: 2px groove #ffffff;
 }
 
-.requestor .card-buttons { margin-top: 5px; margin-bottom: 5px; }
+.requestor.chat-card .card-header img {
+  margin-right: 5px;
+  flex: 0;
+  height: 36px;
+  width: 36px;
+  border: none;
+}
+
+.requestor.chat-card .card-header h3.center {
+  text-align: center;
+}
+
+.requestor.chat-card .card-header h3 {
+  align-self: center;
+  margin: 0;
+  font-family: "Signika";
+  font-size: 25px;
+  border: 0;
+}
+
+.requestor .card-buttons {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
 
 /* ALL TEXT */
 .requestor.chat-card .card-content,
-.requestor.chat-card .card-buttons p { margin: 5px 0; font-size: 14px; }
+.requestor.chat-card .card-buttons p {
+  margin: 5px 0;
+  font-size: 14px;
+}
 
 /* BUTTONS */
 .requestor.chat-card .card-buttons button {
-    width: 100%;
-    font-family: "Signika";
-    background: rgba(0, 0, 0, 0.1);
-    border: 2px groove #eeede0;
-    font-size: 14px;
-    line-height: 20px;
-    height: 30px;
-    margin: 2px 0;
-    border-radius: 20px;
+  width: 100%;
+  font-family: "Signika";
+  background: rgba(0, 0, 0, 0.1);
+  border: 2px groove #eeede0;
+  font-size: 14px;
+  line-height: 20px;
+  height: 30px;
+  margin: 2px 0;
+  border-radius: 20px;
 }
+
 .requestor.chat-card .card-buttons button:not(:disabled):hover {
-    outline: none;
-    box-shadow: 0 0 15px green;
+  outline: none;
+  box-shadow: 0 0 15px green;
 }
+
 .requestor.chat-card .card-buttons button:disabled {
-    color: #00000069;
-    box-shadow: none;
+  color: #00000069;
+  box-shadow: none;
 }
