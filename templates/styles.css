@@ -34,14 +34,20 @@ body :root {
 .requestor.chat-card .card-header h3 {
   align-self: center;
   margin: 0;
-  font-family: "Signika";
+  font-family: "Modesto Condensed";
   font-size: 25px;
   border: 0;
+  line-height: 30px;
+  display: inline-block;
 }
 
 .requestor .card-buttons {
   margin-top: 5px;
   margin-bottom: 5px;
+}
+
+.requestor hr {
+  width: 100%;
 }
 
 /* ALL TEXT */
