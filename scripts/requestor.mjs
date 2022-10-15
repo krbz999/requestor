@@ -13,9 +13,9 @@ import {
 export async function request(config = {}) {
 
   // turn functions into strings before they get destroyed below.
-  for (const btn of config.buttonData) {
-    btn.action = btn.action.toString();
-  }
+  if (config.buttonData?.length) config.buttonData.map(btn => {
+    if (btn.action) btn.action = btn.action.toString();
+  });
 
   const params = foundry.utils.expandObject(config);
   const templateData = {};
@@ -70,7 +70,7 @@ export async function request(config = {}) {
     }, "");
   } else templateData.buttons = false;
 
-  const template = "/modules/requestor/templates/chatcard.html";
+  const template = "/modules/requestor/templates/chatcard.hbs";
   const content = await renderTemplate(template, templateData);
 
   // CHAT CARD DATA.

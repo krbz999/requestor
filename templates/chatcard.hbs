@@ -1,0 +1,24 @@
+<div class="requestor chat-card">
+  <header class="card-header flexrow">
+    {{#if img}}
+    <img src="{{img}}" title="{{title}}">
+    <h3 class="item-name">
+      {{title}}
+    </h3>
+    {{else}}
+    <h3 class="item-name center">
+      {{title}}
+    </h3>
+    {{/if}}
+  </header>
+  {{#if description}}
+  <div class="card-content">
+    {{{description}}}
+  </div>
+  {{/if}}
+  {{#if buttons}}
+  <div class="card-buttons">
+    {{{buttons}}}
+  </div>
+  {{/if}}
+</div>
