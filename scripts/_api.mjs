@@ -2,7 +2,7 @@ import { request } from "./requestor.mjs";
 import { DEMOS } from "./demos.mjs";
 import { LIMIT, PERMISSION, TYPE } from "./_constants.mjs";
 
-export function setup_api() {
+export function setupApi() {
   globalThis.Requestor = {
     LIMIT: LIMIT,
     TYPE: TYPE,

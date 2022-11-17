@@ -1,14 +1,8 @@
 import { LIMIT, MODULE, TRUST_MODE, TRUST_OPTIONS } from "./_constants.mjs";
 import { closeAllPopouts } from "./_popoutHelpers.mjs";
 
-export function setup_chatListeners() {
-  Hooks.on("renderChatLog", onClickButton);
-  Hooks.on("renderChatPopout", onClickButton);
-  Hooks.on("renderChatMessage", setMessageDisabledStates);
-}
-
 // add event listener to chat log.
-function onClickButton(chatLog, html) {
+export function onClickButton(chatLog, html) {
   html[0].addEventListener("click", async (event) => {
     // make sure it's a Requestor button.
     const button = event.target?.closest(`button[id="${MODULE}"]`);
@@ -102,34 +96,55 @@ function onClickButton(chatLog, html) {
 }
 
 // set disabled state of buttons when a message is rendered.
-export function setMessageDisabledStates(chatMessage, html) {
-  return setDisabledState(html[0], chatMessage, chatMessage.id);
+export function setMessageDisabledStates(message) {
+  if (!message) return;
+  document.querySelectorAll(`[data-message-id="${message.id}"]`).forEach(node => {
+
+    // if the message is found, get all of its buttons.
+    const buttons = node.querySelectorAll(`button[id="${MODULE}"]`);
+
+    // for each button, if the button is limited and clicked, set it to be disabled.
+    // if a button is an option, and the user has clicked an option on this card, set it to be disabled.
+    for (const button of buttons) {
+      // get the index of the button to find the user's flag.
+      const buttonIndex = button.dataset.index;
+
+      // this flag only exists if a ONCE button has been clicked.
+      const keyClicked = `messageIds.${message.id}.${buttonIndex}.clicked`;
+      if (game.user.getFlag(MODULE, keyClicked)) button.disabled = true;
+
+      // if OPTION, and an option has been clicked, disable the button.
+      const keyOption = `messageIds.${message.id}.clickedOption`;
+      const hasClickedOption = game.user.getFlag(MODULE, keyOption);
+      const messageButtonDataArray = message.getFlag(MODULE, "args.buttonData");
+      if (hasClickedOption && messageButtonDataArray.length > 0) {
+        const { limit } = messageButtonDataArray[buttonIndex];
+        if (limit === LIMIT.OPTION) button.disabled = true;
+      }
+    }
+  });
 }
 
-// set enabled state of buttons depending on user flags.
-function setDisabledState(messageHTML, messageDoc, messageId) {
-  if (!messageHTML || !messageDoc) return;
+// initial disabled state of buttons when logging in.
+export function initialDisable() {
+  const ids = Object.keys(game.user.getFlag(MODULE, "messageIds") ?? {});
+  for (const id of ids) {
+    const message = game.messages.get(id);
+    if (!message) continue;
+    const messageHTML = document.querySelector(`[data-message-id="${id}"]`);
+    const buttons = messageHTML.querySelectorAll(`button[id="${MODULE}"]`);
+    for (const button of buttons) {
+      const buttonIndex = button.dataset.index;
+      const keyClicked = `messageIds.${id}.${buttonIndex}.clicked`;
+      if (game.user.getFlag(MODULE, keyClicked)) button.disabled = true;
 
-  // if the message is found, get all of its buttons.
-  const buttons = messageHTML.querySelectorAll(`button[id="${MODULE}"]`);
-
-  // for each button, if the button is limited and clicked, set it to be disabled.
-  // if a button is an option, and the user has clicked an option on this card, set it to be disabled.
-  for (const button of buttons) {
-    // get the index of the button to find the user's flag.
-    const buttonIndex = button.dataset.index;
-
-    // this flag only exists if a ONCE button has been clicked.
-    const keyClicked = `messageIds.${messageId}.${buttonIndex}.clicked`;
-    if (game.user.getFlag(MODULE, keyClicked)) button.disabled = true;
-
-    // if OPTION, and an option has been clicked, disable the button.
-    const keyOption = `messageIds.${messageId}.clickedOption`;
-    const hasClickedOption = game.user.getFlag(MODULE, keyOption);
-    const messageButtonDataArray = messageDoc.getFlag(MODULE, "args.buttonData");
-    if (hasClickedOption && messageButtonDataArray.length > 0) {
-      const { limit } = messageButtonDataArray[buttonIndex];
-      if (limit === LIMIT.OPTION) button.disabled = true;
+      const keyOption = `messageIds.${id}.clickedOption`;
+      const hasClickedOption = game.user.getFlag(MODULE, keyOption);
+      const messageButtonDataArray = message.getFlag(MODULE, "args.buttonData");
+      if (hasClickedOption && messageButtonDataArray.length) {
+        const { limit } = messageButtonDataArray[buttonIndex];
+        if (limit === LIMIT.OPTION) button.disabled = true;
+      }
     }
   }
 }

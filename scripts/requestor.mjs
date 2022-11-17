@@ -32,7 +32,7 @@ export async function request(config = {}) {
   // TEMPLATE DATA.
   if (!params.img) {
     const excludeImage = game.settings.get(MODULE, EXCLUDE_IMAGE);
-    if (excludeImage) templateData.img = false;
+    if (excludeImage || params.img === false) templateData.img = false;
     else templateData.img = ICON;
   } else templateData.img = params.img;
   delete params.img;
@@ -70,7 +70,7 @@ export async function request(config = {}) {
     }, "");
   } else templateData.buttons = false;
 
-  const template = "/modules/requestor/templates/chatcard.hbs";
+  const template = "modules/requestor/templates/chatcard.hbs";
   const content = await renderTemplate(template, templateData);
 
   // CHAT CARD DATA.
