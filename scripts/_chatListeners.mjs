@@ -54,7 +54,7 @@ export function onClickButton(chatLog, html) {
     const body = `(
             ${args.action}
         )();`;
-    const fn = Function("token", "character", "actor", "scene", "event", "args", body);
+    const fn = Function("token", "character", "actor", "scene", "amount", "event", "args", body);
 
     // define helper variables.
     let character = game.user.character;
@@ -62,6 +62,16 @@ export function onClickButton(chatLog, html) {
     let actor = token?.actor ?? character;
     let scene = canvas?.scene;
 
+    let amount = "";
+    if ('amount' in args) {
+      amount = args.amount;
+    }
+
+    if ('actor_from_token_ID' in args) {
+      let target_token = canvas.tokens.get(args.actor_from_token_ID)
+      actor = target_token.actor;
+    }
+    
     // if button is unlimited, remove disabled attribute.
     if (limit === LIMIT.FREE) button.disabled = false;
 
@@ -91,7 +101,7 @@ export function onClickButton(chatLog, html) {
     delete THIS.label;
 
     // execute the embedded function.
-    return fn.call(THIS, token, character, actor, scene, event, THIS);
+    return fn.call(THIS, token, character, actor, scene, amount, event, THIS);
   });
 }
 
