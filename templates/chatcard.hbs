@@ -1,24 +1,16 @@
 <div class="requestor chat-card">
   <header class="card-header flexrow">
-    {{#if img}}
-    <img src="{{img}}" title="{{title}}">
-    <h3 class="item-name">
-      {{title}}
-    </h3>
-    {{else}}
-    <h3 class="item-name center">
-      {{title}}
-    </h3>
-    {{/if}}
+    {{#if img}}<img src="{{img}}">{{/if}}
+    <h3 class="title">{{title}}</h3>
   </header>
-  {{#if description}}
-  <div class="card-content">
-    {{{description}}}
-  </div>
-  {{/if}}
-  {{#if buttons}}
-  <div class="card-buttons">
-    {{{buttons}}}
+  {{#if description}}<div class="card-content">{{{description}}}</div>{{/if}}
+  {{#if buttons.length}}
+  <div class="buttons">
+    {{#each buttons}}
+    <button class="{{cls}}" data-action="requestor" data-function-id="{{id}}">
+      {{label}}
+    </button>
+    {{/each}}
   </div>
   {{/if}}
 </div>
