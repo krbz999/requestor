@@ -1,7 +1,5 @@
 export const MODULE = "requestor";
 export const ICON = "icons/containers/boxes/box-gift-green.webp";
-export const TYPE = {BUTTON: "button", DIV: "<hr>", TEXT: "text"};
-
 export const LIMIT = {
   FREE: 0,
   ONCE: 1,
