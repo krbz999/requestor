@@ -89,3 +89,4 @@ These variables are declared in any executed command:
 * `actor`: the actor of the selected token, if any, or defaulting to the assigned character.
 * `event`: the initiating click event when the user clicked the button.
 * `this`: an object with all additional variables passed to the function (identical to `scope` above).
+If `tokenId` or `actorId` are passed in `scope`, then `token` and `actor` will automatically be set using these ids.

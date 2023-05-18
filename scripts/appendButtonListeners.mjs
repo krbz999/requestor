@@ -22,13 +22,13 @@ function applyDisabled(button) {
   if (limit === LIMIT.ONCE) {
     // If the user has already clicked this once-only button, disable it.
     let clicked = game.user.flags[MODULE]?.clicked;
-    if (!(clicked instanceof Set)) clicked = new Set();
-    if (clicked.has(id)) button.disabled = true;
+    if (!(clicked instanceof Array)) clicked = [];
+    if (clicked.includes(id)) button.disabled = true;
   } else if (limit === LIMIT.OPTION) {
     // If the user has already clicked one of these option buttons, disable it.
     let clicked = game.user.flags[MODULE]?.clickedOption;
-    if (!(clicked instanceof Set)) clicked = new Set();
-    if (clicked.has(this.id)) button.disabled = true;
+    if (!(clicked instanceof Array)) clicked = [];
+    if (clicked.includes(this.id)) button.disabled = true;
   }
 }
 
@@ -74,9 +74,17 @@ async function clickButton(event) {
   const fn = Function("token", "character", "actor", "event", ...Object.keys(data.scope), body);
 
   // Define the helper variables.
-  const token = canvas?.tokens.controlled[0] ?? game.user.character?.getActiveTokens()[0];
   const character = game.user.character;
-  const actor = token?.actor ?? game.user.character;
+
+  // If 'tokenId' is passed as an argument, 'token' is instead that token on the canvas.
+  let token;
+  if ("tokenId" in data.scope) token = canvas?.tokens.get(data.scope.tokenId);
+  else token = canvas?.tokens.controlled[0] ?? game.user.character?.getActiveTokens()[0];
+
+  // If 'actorId' is passed as an argument, 'actor' is instead that actor
+  let actor;
+  if ("actorId" in data.scope) actor = game.actors.get(data.scope.actorId);
+  else actor = token?.actor ?? game.user.character;
 
   // Close all popouts that belong to this chat message.
   if (this.flags[MODULE]?.options?.autoclose === true) {
@@ -84,6 +92,9 @@ async function clickButton(event) {
       if (value.popOut && value.rendered) value.close();
     }
   }
+
+  // Enable the button again.
+  if ((data.limit !== LIMIT.ONCE) && (data.limit !== LIMIT.OPTION)) button.disabled = false;
 
   // Execute the embedded function.
   return fn.call(data.scope, token, character, actor, event, ...Object.values(data.scope));

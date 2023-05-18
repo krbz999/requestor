@@ -1,11 +1,10 @@
 import {request} from "./requestor.mjs";
 import {DEMOS} from "./demos.mjs";
-import {LIMIT, PERMISSION, TYPE} from "./constants.mjs";
+import {LIMIT, PERMISSION} from "./constants.mjs";
 
 export function setupApi() {
   globalThis.Requestor = {
     LIMIT: LIMIT,
-    TYPE: TYPE,
     PERMISSION: PERMISSION,
     request: request,
     grantItem: DEMOS.grantItem,
