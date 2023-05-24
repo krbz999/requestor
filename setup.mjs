@@ -1,18 +1,10 @@
-import { setupApi } from "./scripts/_api.mjs";
-import { initialDisable, onClickButton, setMessageDisabledStates } from "./scripts/_chatListeners.mjs";
-import { cleanUp } from "./scripts/_cleanupHelpers.mjs";
-import { popoutHelpers } from "./scripts/_popoutHelpers.mjs";
-import { setupSettings } from "./scripts/_settings.mjs";
+import {setupApi} from "./scripts/api.mjs";
+import {appendButtonListeners, createMessagePopout} from "./scripts/appendButtonListeners.mjs";
+import {cleanUpUser} from "./scripts/cleanUpUser.mjs";
+import {settings} from "./scripts/settings.mjs";
 
-Hooks.once("init", () => {
-  console.log("ZHELL | Initializing Requestor");
-});
-
+Hooks.on("renderChatMessage", appendButtonListeners);
+Hooks.once("renderChatLog", cleanUpUser);
+Hooks.once("setup", settings);
 Hooks.once("setup", setupApi);
-Hooks.once("setup", setupSettings);
-Hooks.once("ready", initialDisable);
-Hooks.once("renderChatLog", cleanUp);
-Hooks.on("renderChatLog", onClickButton);
-Hooks.on("renderChatPopout", onClickButton);
-Hooks.on("renderChatMessage", setMessageDisabledStates);
-Hooks.on("createChatMessage", popoutHelpers);
+Hooks.on("createChatMessage", createMessagePopout);

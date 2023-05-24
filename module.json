@@ -1,7 +1,7 @@
 {
   "id": "requestor",
   "title": "Requestor",
-  "version": "10.0.5.2",
+  "version": "11.0.0",
   "authors": [
     {
       "name": "Zhell",
@@ -11,15 +11,15 @@
     }
   ],
   "compatibility": {
-    "minimum": "10",
-    "maximum": "10",
-    "verified": "10.290"
+    "minimum": "11",
+    "maximum": "11",
+    "verified": "11.297"
   },
   "esmodules": [
     "setup.mjs"
   ],
   "styles": [
-    "templates/styles.css"
+    "styles/requestor.css"
   ],
   "languages": [
     {
@@ -31,7 +31,5 @@
   ],
   "url": "https://github.com/krbz999/requestor",
   "manifest": "https://github.com/krbz999/requestor/releases/latest/download/module.json",
-  "download": "https://github.com/krbz999/requestor/releases/download/v10.0.5.2/module.zip",
-  "name": "requestor",
-  "minimumCoreVersion": "10"
+  "download": "https://github.com/krbz999/requestor/releases/download/v11.0.0/module.zip"
 }
