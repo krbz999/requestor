@@ -27,6 +27,12 @@
       "name": "English",
       "path": "langs/en.json",
       "flags": {}
+    },
+    {
+      "lang": "de",
+      "name": "Deutsch",
+      "path": "langs/de.json",
+      "flags": {}
     }
   ],
   "url": "https://github.com/krbz999/requestor",

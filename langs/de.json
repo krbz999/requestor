@@ -1,0 +1,7 @@
+{
+  "REQUESTOR.ClickMe": "Klick mich!",
+  "REQUESTOR.Request": "Anfrage",
+  "REQUESTOR.WarningGM": "Abgebrochen: Du darfst nur Anfragen von der SL ausführen.",
+  "REQUESTOR.WarningNoPermission": "Abgebrochen: Nur die SL darf Anfragen senden.",
+  "REQUESTOR.WarningOwn": "Abgebrochen: Du darfst nur die Anfragen von dir oder der SL ausführen."
+}
