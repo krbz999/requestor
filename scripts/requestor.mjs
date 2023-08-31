@@ -10,6 +10,7 @@ import {ICON, LIMIT, MODULE, PERMISSION, SETTINGS, TRUST_OPTIONS} from "./consta
  * @param {boolean} autoclose       If the popout message should automatically close when a user clicks any button.
  * @param {number} limit            A fallback 'limit' value for each button, in case one is not specified.
  * @param {string[]} whisper        An array of user ids to whisper the message to.
+ * @param {boolean} blind           If the created message should be 'blind to GM'.
  * @param {string} sound            The sound for the message to create when rendered.
  * @returns {ChatMessage}           The created chat message.
  */
@@ -22,6 +23,7 @@ export async function request({
   autoclose = true,
   limit = null,
   whisper = [],
+  blind = false,
   sound = null
 } = {}) {
   // Bail out if the user does not have permission to use this.
@@ -71,6 +73,7 @@ export async function request({
   const messageData = {
     content,
     whisper,
+    blind,
     sound,
     flags: {[MODULE]: data, core: {canPopout: true}}
   };
