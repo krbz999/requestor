@@ -70,11 +70,11 @@ export async function request({
     buttons, img, title, description
   });
 
-  const messageData = {
+  const messageData = foundry.utils.mergeObject( messageOptions, {
     content,
     whisper,
     sound,
     flags: {[MODULE]: data, core: {canPopout: true}}
-  };
-  return ChatMessage.create({...messageData, ...messageOptions});
+  });
+  return ChatMessage.create(messageData);
 }
