@@ -30,7 +30,8 @@ Create the following constants, all of which are optional, then run the main met
 * `popout`; whether to create a popout of this message automatically for all users that can see it (true or false).
 * `autoclose`; whether the popout (see above) should close automatically when a user clicks any of the buttons (true or false).
 * `limit`; the limit of the buttons that do not have their own set limit. The values are `Requestor.LIMIT.FREE` (for buttons that can be clicked as much as a user would want), `.ONCE` (for a button that can be clicked only once), and `.OPTION` (for buttons that can be clicked only once, and also disables all other buttons on the card set to `.OPTION`).
-* And of course the standard `whisper` array, `blind` option, `sound` file (string), and `speaker` object.
+* And of course the standard `whisper` array, `sound` file (string), and `speaker` object.
+* The final key `messageOptions` is an object passed directly into the ChatMessage constructor which should contain any additional fields accepted by the constructor that the user may wish to add such as `blind`, `type`,`rolls`, etc. This module makes no guarantees on the behaviour of the options passed here.
 
 ### buttonData array
 The `buttonData` array is an array of objects detailing the buttons that go on the card. Each object should have `command` (a function) and `label` (a string). Any special parameters that should be used in the function can be added under a third parameter `scope` (an object); these will be directly accessible in the command. Example:

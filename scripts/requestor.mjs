@@ -10,8 +10,8 @@ import {ICON, LIMIT, MODULE, PERMISSION, SETTINGS, TRUST_OPTIONS} from "./consta
  * @param {boolean} autoclose       If the popout message should automatically close when a user clicks any button.
  * @param {number} limit            A fallback 'limit' value for each button, in case one is not specified.
  * @param {string[]} whisper        An array of user ids to whisper the message to.
- * @param {boolean} blind           If the created message should be 'blind to GM'.
  * @param {string} sound            The sound for the message to create when rendered.
+ * @param {object} messageOptions   Additional options passed directly to the ChatMessage constructor
  * @returns {ChatMessage}           The created chat message.
  */
 export async function request({
@@ -23,8 +23,8 @@ export async function request({
   autoclose = true,
   limit = null,
   whisper = [],
-  blind = false,
-  sound = null
+  sound = null,
+  messageOptions = {}
 } = {}) {
   // Bail out if the user does not have permission to use this.
   const gmOnly = game.settings.get(MODULE, SETTINGS.TRUST_MODE) === TRUST_OPTIONS.GM;
@@ -73,9 +73,8 @@ export async function request({
   const messageData = {
     content,
     whisper,
-    blind,
     sound,
     flags: {[MODULE]: data, core: {canPopout: true}}
   };
-  return ChatMessage.create(messageData);
+  return ChatMessage.create({...messageData, ...messageOptions});
 }
