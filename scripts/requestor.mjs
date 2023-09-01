@@ -70,7 +70,7 @@ export async function request({
     buttons, img, title, description
   });
 
-  const messageData = foundry.utils.mergeObject( messageOptions, {
+  const messageData = foundry.utils.mergeObject(messageOptions, {
     content,
     whisper,
     sound,
