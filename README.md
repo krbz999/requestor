@@ -1,3 +1,5 @@
+Interested in following along with development of any of my modules? Join the [Discord server](https://discord.gg/QAG8eWABGT). 
+
 # Requestor
 This is a system-agnostic module that a GM can use with the built-in methods to create chat cards with buttons for players (or the GM) to click.
 
