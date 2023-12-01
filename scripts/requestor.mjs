@@ -2,17 +2,18 @@ import {ICON, LIMIT, MODULE, PERMISSION, SETTINGS, TRUST_OPTIONS} from "./consta
 
 /**
  * Create a request message in chat.
- * @param {object[]} buttonData     An array of objects, each with 'permission', 'label', 'limit', 'command', and 'scope'.
- * @param {string} img              The image to use for the message, if any.
- * @param {string} title            The title to use for the message, defaulting to 'Request'.
- * @param {string} description      The text description to display in the message, if any.
- * @param {boolean} popout          If the message should automatically pop out for each user.
- * @param {boolean} autoclose       If the popout message should automatically close when a user clicks any button.
- * @param {number} limit            A fallback 'limit' value for each button, in case one is not specified.
- * @param {string[]} whisper        An array of user ids to whisper the message to.
- * @param {string} sound            The sound for the message to create when rendered.
- * @param {object} messageOptions   Additional options passed directly to the ChatMessage constructor
- * @returns {ChatMessage}           The created chat message.
+ * @param {object[]} buttonData         An array of objects, each with 'permission', 'label', 'limit', 'command', and 'scope'.
+ * @param {string} img                  The image to use for the message, if any.
+ * @param {string} title                The title to use for the message, defaulting to 'Request'.
+ * @param {string} description          The text description to display in the message, if any.
+ * @param {boolean} popout              If the message should automatically pop out for each user.
+ * @param {boolean} autoclose           If the popout message should automatically close when a user clicks any button.
+ * @param {number} limit                A fallback 'limit' value for each button, in case one is not specified.
+ * @param {string[]} whisper            An array of user ids to whisper the message to.
+ * @param {string} sound                The sound for the message to create when rendered.
+ * @param {object} speaker              The speaker of the message.
+ * @param {object} messageOptions       Additional options passed directly to the ChatMessage constructor
+ * @returns {Promise<ChatMessage>}      The created chat message.
  */
 export async function request({
   buttonData = [],
@@ -24,6 +25,7 @@ export async function request({
   limit = null,
   whisper = [],
   sound = null,
+  speaker = {},
   messageOptions = {}
 } = {}) {
   // Bail out if the user does not have permission to use this.
@@ -66,15 +68,10 @@ export async function request({
   }
 
   const template = "modules/requestor/templates/chatcard.hbs";
-  const content = await renderTemplate(template, {
-    buttons, img, title, description
-  });
+  const content = await renderTemplate(template, {buttons, img, title, description});
 
   const messageData = foundry.utils.mergeObject(messageOptions, {
-    content,
-    whisper,
-    sound,
-    flags: {[MODULE]: data, core: {canPopout: true}}
+    content, whisper, sound, speaker, flags: {[MODULE]: data, core: {canPopout: true}}
   });
-  return ChatMessage.create(messageData);
+  return ChatMessage.implementation.create(messageData);
 }
