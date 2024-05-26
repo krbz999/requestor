@@ -8,17 +8,18 @@ import {LIMIT, MODULE} from "./constants.mjs";
 export function appendButtonListeners(message, [html]) {
   html.querySelectorAll("button[data-action='requestor']").forEach(n => {
     n.addEventListener("click", clickButton.bind(message));
-    applyDisabled(message, html);
+    applyDisabled(message);
   });
 }
 
 /**
  * Apply 'disabled' attribute to the buttons of a chat message if it should be disabled for a user.
  * @param {ChatMessage} message     The rendered chat message.
- * @param {HTMLElement} html        The element of the message.
  */
-function applyDisabled(message, html) {
-  for (const button of html.querySelectorAll("[data-action=requestor]")) {
+function applyDisabled(message) {
+  const messageId = message.id;
+  const buttons = document.querySelectorAll(`[data-message-id="${messageId}"] [data-action=requestor]`);
+  for (const button of buttons) {
     const id = button.dataset.functionId;
     const limit = message.flags[MODULE]?.[id]?.limit;
     if (limit === LIMIT.ONCE) {
@@ -42,7 +43,6 @@ function applyDisabled(message, html) {
  */
 async function clickButton(event) {
   const button = event.currentTarget;
-  const html = button.closest("[data-message-id]");
   button.disabled = true;
 
   // The id of the function to call.
@@ -71,7 +71,7 @@ async function clickButton(event) {
       await game.user.setFlag(MODULE, "clickedOption", clicked);
     }
 
-    applyDisabled(this, html);
+    applyDisabled(this);
   }
 
   // Create the function to call.
