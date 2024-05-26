@@ -6,19 +6,21 @@ import {LIMIT, MODULE} from "./constants.mjs";
  * @param {HTMLElement} html        The element of the message.
  */
 export function appendButtonListeners(message, [html]) {
-  html.querySelectorAll("button[data-action='requestor']").forEach(n => {
+  html.querySelectorAll("[data-action=requestor]").forEach(n => {
     n.addEventListener("click", clickButton.bind(message));
-    applyDisabled(message);
+    applyDisabled(message, html);
   });
 }
 
 /**
  * Apply 'disabled' attribute to the buttons of a chat message if it should be disabled for a user.
  * @param {ChatMessage} message     The rendered chat message.
+ * @param {HTMLElement} [html]      Optional rendered specific chat message's element.
  */
-function applyDisabled(message) {
+function applyDisabled(message, html) {
   const messageId = message.id;
-  const buttons = document.querySelectorAll(`[data-message-id="${messageId}"] [data-action=requestor]`);
+  const buttons = new Set([...document.querySelectorAll(`[data-message-id="${messageId}"] [data-action=requestor]`)]);
+  if (html) for (const button of html.querySelectorAll("[data-action=requestor]")) buttons.add(button);
   for (const button of buttons) {
     const id = button.dataset.functionId;
     const limit = message.flags[MODULE]?.[id]?.limit;
