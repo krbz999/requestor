@@ -2,7 +2,6 @@ import {MODULE} from "./constants.mjs";
 
 /**
  * Set up the player-only and gm-only css, and clean any deprecated ids from the user document.
- * @returns {User}      The updated user.
  */
 export async function cleanUpUser() {
   // set up display of player-only and GM-only content.
@@ -22,5 +21,5 @@ export async function cleanUpUser() {
   if (data.clickedOption?.length) {
     update[`flags.${MODULE}.clickedOption`] = data.clickedOption.filter(id => game.messages.has(id));
   }
-  return game.user.update(update);
+  game.user.update(update);
 }

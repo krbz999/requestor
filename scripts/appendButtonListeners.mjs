@@ -113,9 +113,8 @@ async function clickButton(event) {
 /**
  * Create a popout of a message if called for, and if the user can view it.
  * @param {ChatMessage} message     The created chat message.
- * @returns {ChatPopout}            The created popout.
  */
 export function createMessagePopout(message) {
   if ((message.flags[MODULE]?.options?.popout !== true) || !message.visible) return;
-  return new ChatPopout(message).render(true);
+  new ChatPopout(message).render(true);
 }

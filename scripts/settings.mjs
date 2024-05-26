@@ -1,6 +1,7 @@
 import {MODULE, SETTINGS, TRUST_OPTIONS} from "./constants.mjs";
 
 export function settings() {
+
   game.settings.register(MODULE, SETTINGS.EXCLUDE_IMAGE, {
     name: "REQUESTOR.SettingsExcludeImage",
     hint: "REQUESTOR.SettingsExcludeImageHint",

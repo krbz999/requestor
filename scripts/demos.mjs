@@ -76,7 +76,7 @@ export class DEMOS {
   }
 
   static async createMeasuredTemplate({whisper = [], templateData = null, limit} = {}) {
-    const {x, y} = canvas.app.renderer.plugins.interaction.mouse.getLocalPosition(canvas.app.stage);
+    const {x, y} = canvas.mousePosition;
     templateData ??= {t: "circle", x, y, distance: 20, direction: 0, angle: 0, width: 1};
     const buttonData = [{
       label: "Place Template",
