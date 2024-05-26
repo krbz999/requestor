@@ -1,0 +1,25 @@
+{
+  "name": "requestor",
+  "version": "1.0.0",
+  "description": "Requestor",
+  "scripts": {
+    "build": "rollup -c rollup.config.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/krbz999/requestor.git"
+  },
+  "keywords": [
+    "fvtt",
+    "module"
+  ],
+  "author": "Zhell",
+  "bugs": {
+    "url": "https://github.com/krbz999/requestor"
+  },
+  "homepage": "https://github.com/krbz999/requestor",
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "rollup": "^4.17.2"
+  }
+}
