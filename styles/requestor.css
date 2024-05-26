@@ -4,6 +4,11 @@
   --requestor-display-gm: block;
 }
 
+/* Hide chatlog buttons if popout-only. */
+#chat-log li.chat-message.message:has(.requestor.chat-card.popout-only) {
+  display: none;
+}
+
 .requestor .gm {
   display: var(--requestor-display-gm) !important;
 }

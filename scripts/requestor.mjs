@@ -7,6 +7,7 @@ import {ICON, LIMIT, MODULE, PERMISSION, SETTINGS, TRUST_OPTIONS} from "./consta
  * @param {string} [title=null]             The title to use for the message, defaulting to 'Request'.
  * @param {string} [description=null]       The text description to display in the message, if any.
  * @param {boolean} [popout=false]          If the message should automatically pop out for each user.
+ * @param {boolean} [popoutOnly=false]      Hide the regular chat message? Does nothing unless 'popout' is also enabled.
  * @param {boolean} [autoclose=true]        If the popout message should automatically close when a user clicks any button.
  * @param {number} [limit=null]             A fallback 'limit' value for each button, in case one is not specified.
  * @param {string[]} [whisper=[]]           An array of user ids to whisper the message to.
@@ -22,6 +23,7 @@ export async function request({
   title = null,
   description = null,
   popout = false,
+  popoutOnly = false,
   autoclose = true,
   limit = null,
   whisper = [],
@@ -46,7 +48,7 @@ export async function request({
   // If no title was provided, use the default.
   if (!title) title = game.i18n.localize("REQUESTOR.Request");
 
-  const data = {options: {popout, autoclose, autoDelete}};
+  const data = {options: {popout, autoclose, autoDelete, popoutOnly: !!popout && !!popoutOnly}};
   const buttons = [];
   for (const button of buttonData) {
     const id = foundry.utils.randomID();
@@ -70,7 +72,7 @@ export async function request({
   }
 
   const template = "modules/requestor/templates/chatcard.hbs";
-  const content = await renderTemplate(template, {buttons, img, title, description});
+  const content = await renderTemplate(template, {buttons, img, title, description, hidden: data.options.popoutOnly});
 
   const messageData = foundry.utils.mergeObject(messageOptions, {
     content, whisper, sound, speaker, flags: {[MODULE]: data, core: {canPopout: true}}

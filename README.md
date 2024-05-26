@@ -30,6 +30,7 @@ Create the following constants, all of which are optional, then run the main met
 * `description`; the text description in the card (defaults to an empty string).
 * `buttonData`; an array of objects, detailed below.
 * `popout`; whether to create a popout of this message automatically for all users that can see it (true or false).
+* `popoutOnly` (default false) hides the regular chat message. Does nothing unless 'popout' is also enabled.
 * `autoclose`; whether the popout (see above) should close automatically when a user clicks any of the buttons (true or false).
 * `limit`; the limit of the buttons that do not have their own set limit. The values are `Requestor.LIMIT.FREE` (for buttons that can be clicked as much as a user would want), `.ONCE` (for a button that can be clicked only once), and `.OPTION` (for buttons that can be clicked only once, and also disables all other buttons on the card set to `.OPTION`).
 * The `autoDelete` property (default `false`) will delete the message as soon as any button is clicked (if the user has permission to delete the message).
