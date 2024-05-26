@@ -73,7 +73,8 @@ async function clickButton(event) {
       await game.user.setFlag(MODULE, "clickedOption", clicked);
     }
 
-    applyDisabled(this);
+    if (this.isOwner && this.flags.requestor.options?.autoDelete) this.delete();
+    else applyDisabled(this);
   }
 
   // Create the function to call.

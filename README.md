@@ -1,4 +1,4 @@
-Interested in following along with development of any of my modules? Join the [Discord server](https://discord.gg/QAG8eWABGT). 
+Interested in following along with development of any of my modules? Join the [Discord server](https://discord.gg/QAG8eWABGT).
 
 # Requestor
 This is a system-agnostic module that a GM can use with the built-in methods to create chat cards with buttons for players (or the GM) to click.
@@ -32,6 +32,7 @@ Create the following constants, all of which are optional, then run the main met
 * `popout`; whether to create a popout of this message automatically for all users that can see it (true or false).
 * `autoclose`; whether the popout (see above) should close automatically when a user clicks any of the buttons (true or false).
 * `limit`; the limit of the buttons that do not have their own set limit. The values are `Requestor.LIMIT.FREE` (for buttons that can be clicked as much as a user would want), `.ONCE` (for a button that can be clicked only once), and `.OPTION` (for buttons that can be clicked only once, and also disables all other buttons on the card set to `.OPTION`).
+* The `autoDelete` property (default `false`) will delete the message as soon as any button is clicked (if the user has permission to delete the message).
 * And of course the standard `whisper` array, `sound` file (string), and `speaker` object.
 * The final key `messageOptions` is an object passed directly into the ChatMessage constructor which should contain any additional fields accepted by the constructor that the user may wish to add such as `blind`, `type`, `rolls`, etc. This module makes no guarantees on the behaviour of the options passed here.
 
