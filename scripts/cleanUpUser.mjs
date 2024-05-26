@@ -20,9 +20,7 @@ export async function cleanUpUser() {
     });
   }
   if (data.clickedOption?.length) {
-    update[`flags.${MODULE}.clickedOption`] = data.clickedOption.filter(id => {
-      return game.messages.get(id);
-    });
+    update[`flags.${MODULE}.clickedOption`] = data.clickedOption.filter(id => game.messages.has(id));
   }
   return game.user.update(update);
 }

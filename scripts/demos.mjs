@@ -98,18 +98,18 @@ export class DEMOS {
       img: ICON,
       system: {
         description: {value: "<p>It's a free muffin!</p>"},
-        weight: 0.1,
+        weight: {value: 0.1},
         price: {value: 50, denomination: "gp"},
         rarity: "common",
         activation: {type: "action", cost: 1},
         range: {units: "self"},
         target: {type: "self"},
-        uses: {value: 1, max: 1, per: "charges", autoDestroy: true},
+        uses: {value: 1, max: "1", per: "charges", autoDestroy: true},
         actionType: "heal",
         damage: {parts: [["1d10", "healing"]]},
-        consumableType: "food"
+        type: {value: "food"}
       }
-    }
+    };
     return this.grantItem({itemData, limit: LIMIT.ONCE});
   }
 }
