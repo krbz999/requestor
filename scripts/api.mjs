@@ -9,7 +9,7 @@ export function setupApi() {
     request: request,
     grantItem: DEMOS.grantItem,
     diceRoll: DEMOS.diceRoll
-  }
+  };
 
   if (game.system.id === "dnd5e") {
     Requestor.dnd5e = {
@@ -19,6 +19,6 @@ export function setupApi() {
       placeMeasuredTemplate: DEMOS.createMeasuredTemplate,
       grantMuffin: DEMOS.grantMuffin,
       useItem: DEMOS.useItem
-    }
+    };
   }
 }
